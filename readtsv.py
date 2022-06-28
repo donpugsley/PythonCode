@@ -10,15 +10,7 @@ import matplotlib.pyplot as plt
 fn = '../testvmr.dat1.tsv'
 data = pd.read_csv(fn,delimiter='\t')
 
-
-t = data['t']
-x = data['/1/vector.x']
-y = data['/1/vector.y']
-z = data['/1/vector.z']
-title = 'VMR'
-units = 'nT'
-
-def threeplot(x,y,z,units,title):
+def threeplot(t,x,y,z,units,title):
     fig, ax = plt.subplots()
     ax.plot(t, x-np.mean(x))
     ax.plot(t, y-np.mean(y))
@@ -29,8 +21,8 @@ def threeplot(x,y,z,units,title):
     
     plt.show()
 
-threeplot(x,y,z,units,title)
-pass
+threeplot(data['t'],data['/1/vector.x'],data['/1/vector.y'],data['/1/vector.z'],'nT','VMR Test')
+
 
 # seaborn:
 # iloc()
