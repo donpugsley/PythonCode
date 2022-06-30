@@ -2,8 +2,13 @@
 
 import sys
 import pandas as pd
+import plotters as p
+from plotters import tf
+
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+from scipy import signal
 
 # TODO - pass in fn as argument
 # fn = '../testvmr.dat1.tsv'
@@ -16,27 +21,24 @@ else:
 # mpl.use('QtAgg')
 
 data = pd.read_csv(fn,delimiter='\t')
+t = data['t']; # Seconds
+x = data['/1/vector.x']
+y = data['/1/vector.y']
+z = data['/1/vector.z']
 
-def threeplot(t,x,y,z,units,title):
-    fig, ax = plt.subplots()
-    mx = np.mean(x)
-    my = np.mean(y)
-    mz = np.mean(z)
-    ax.plot(t, x-mx,label=f'X {mx:.0f} DC')
-    ax.plot(t, y-my,label=f'Y {my:.0f} DC')
-    ax.plot(t, z-mz,label=f'Z {mz:.0f} DC')
+N = len(t)
+secs = (t.iloc[-1]-t.iloc[0])
+mins = secs/60
+hrs = mins/60
+sr = round(N/secs)
+print(f'Read {fn}, got {N} points ({secs:.1f} seconds, {mins:.1f} minutes, {hrs:.1f} hours) at {sr} Hz ')
 
-    ax.legend()
-    ax.set_title(title)
-    ax.set_ylabel(units)
-    ax.set_xlabel('Time (seconds)', fontsize=12)
-    plt.tick_params(axis='both', which='major', labelsize=12)
-    # plt.axis([0, 1100, 0, 1100000])
-    plt.grid(visible='true')
-    plt.show()
+p.threeplot(t,x,y,z,'nT','Twinleaf VMR Mag')
+p.oneplot(t,tf(x,y,z),'nT','Twinleaf VMR Mag Total Field')
 
-threeplot(data['t'],data['/1/vector.x'],data['/1/vector.y'],
-          data['/1/vector.z'],'nT','Twinleaf VMR Mag')
+
+p.sg(tf(x,y,z),sr,'nT','Twinleaf VMR Mag Total Field')
+
 
 pass
 # seaborn:
