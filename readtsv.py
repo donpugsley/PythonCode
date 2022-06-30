@@ -10,21 +10,29 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy import signal
 
-# TODO - pass in fn as argument
+# TODO - improve input flexibility
 # fn = '../testvmr.dat1.tsv'
 if len(sys.argv) > 1:
     fn = sys.argv[1]
+    rpcid = sys.argv[2]
 else:
-    fn = '../hotel-floor-more1.tsv'
+    # fn = '../hotel-floor-more1.tsv'
+    fn = '../meeting1.tsv'
+    rpcid = 3
+    
+doplots = True
     
 # Maybe change backend behavior
 # mpl.use('QtAgg')
 
-data = pd.read_csv(fn,delimiter='\t')
+df = pd.read_csv(fn,delimiter='\t')
+# Drop unused columns (sync4 stuff) that might contain nans
+df = df[['t',f'/{rpcid}/vector.x',f'/{rpcid}/vector.y',f'/{rpcid}/vector.z']]
+data = df.dropna(axis=0) # Drop rows with nan
 t = data['t']; # Seconds
-x = data['/1/vector.x']
-y = data['/1/vector.y']
-z = data['/1/vector.z']
+x = data[f'/{rpcid}/vector.x']
+y = data[f'/{rpcid}/vector.y']
+z = data[f'/{rpcid}/vector.z']
 
 N = len(t)
 secs = (t.iloc[-1]-t.iloc[0])
@@ -33,14 +41,21 @@ hrs = mins/60
 sr = round(N/secs)
 print(f'Read {fn}, got {N} points ({secs:.1f} seconds, {mins:.1f} minutes, {hrs:.1f} hours) at {sr} Hz ')
 
-p.threeplot(t,x,y,z,'nT','Twinleaf VMR Mag')
-p.oneplot(t,tf(x,y,z),'nT','Twinleaf VMR Mag Total Field')
+if doplots:
+    plt.close('all') # TODO - Doesn't work
+    
+    p.threeplot(t,x,y,z,'nT','Twinleaf VMR Mag')
+    
+    p.oneplot(t,tf(x,y,z),'nT','Twinleaf VMR Mag Total Field')
+    
+    p.lsd(x,sr,'nT','Twinleaf VMR Mag X')
+    
+    p.threelsd(x,y,z,sr,'nT','Twinleaf VMR Mag','X','Y','Z',4)
+    
+    p.sg(y,sr,'nT','Twinleaf VMR Mag Y')
 
+# return t,x,y,z
 
-p.sg(tf(x,y,z),sr,'nT','Twinleaf VMR Mag Total Field')
-
-
-pass
 # seaborn:
 # iloc()
 # figsize()

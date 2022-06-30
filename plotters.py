@@ -20,7 +20,6 @@ def threeplot(t,x,y,z,units,title):
     ax.plot(t, x-mx,label=f'X {mx:.0f} DC')
     ax.plot(t, y-my,label=f'Y {my:.0f} DC')
     ax.plot(t, z-mz,label=f'Z {mz:.0f} DC')
-
     ax.legend()
     ax.set_title(title)
     ax.set_ylabel(units)
@@ -58,10 +57,29 @@ def lsd(v,sr,units,title):
     plt.grid(visible='true')
     plt.show()
 
+def threelsd(x,y,z,sr,units,title,lx,ly,lz,welchfactor):
+    xfreqs, xpsd = signal.welch(x,fs=sr,nperseg=len(x)//welchfactor)
+    lsdx = np.sqrt(xpsd)
+    yfreqs, ypsd = signal.welch(y,fs=sr,nperseg=len(y)//welchfactor)
+    lsdy = np.sqrt(ypsd)
+    zfreqs, zpsd = signal.welch(z,fs=sr,nperseg=len(z)//welchfactor)
+    lsdz = np.sqrt(zpsd)
+    plt.figure(figsize=(5, 4))
+    plt.loglog(xfreqs,lsdx, label='X')
+    plt.loglog(yfreqs,lsdy, label='Y')
+    plt.loglog(zfreqs,lsdz, label='Z')
+    plt.legend()
+    plt.title('LSD  '+title)
+    plt.xlabel('Frequency (Hz)')
+    plt.ylabel(units+'/rtHz')
+    plt.tight_layout()
+    plt.grid(visible='true')
+    plt.show()
+
 def sg(v,sr,units,title):
     freqs, times, spectrogram = signal.spectrogram(v,fs=sr)
     plt.figure(figsize=(5, 4))
-    plt.imshow(spectrogram, aspect='auto', cmap='hot_r', origin='lower')
+    plt.imshow(spectrogram, aspect='auto', origin='lower') # cmap='hot_r', 
     plt.title(title)
     plt.ylabel('Frequency')
     plt.xlabel('Time')
