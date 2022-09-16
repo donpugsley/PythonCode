@@ -45,11 +45,15 @@ def oneplot(t,v,units,title):
     plt.grid(visible='true')
     plt.show()
 
-def lsd(v,sr,units,title):
+def lsd(t,v,sr,units,title):
     freqs, psd = signal.welch(v,fs=sr,nperseg=len(v)//2)
-    lsd = np.sqrt(psd)
+    lsd = np.sqrt(psd) 
+    lsfreqs = freqs[1]+freqs[1:] # Duplicate first nonzero point, LS doesn't like 0 freq
+    lspsd = signal.lombscargle(t,v,lsfreqs/(2*np.pi)) # Convert from Hz to rads/sec
+    lslsd = np.sqrt(lspsd)
     plt.figure(figsize=(5, 4))
-    plt.loglog(freqs, lsd)
+    plt.loglog(freqs, lsd, label='Welch')
+    plt.loglog(lsfreqs, lslsd, label='Lomb-Scargle')
     plt.title('LSD  '+title)
     plt.xlabel('Frequency (Hz)')
     plt.ylabel(units+'/rtHz')

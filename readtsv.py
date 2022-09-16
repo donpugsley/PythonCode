@@ -16,9 +16,12 @@ if len(sys.argv) > 1:
     fn = sys.argv[1]
     rpcid = sys.argv[2]
 else:
-    # fn = '../hotel-floor-more1.tsv'
-    fn = '../meeting1.tsv'
-    rpcid = 3
+    print(f'Usage: readtsv.py filename rpcid ')
+    sys.exit()
+    
+# DEBUG
+#    fn = '../homeoffice2.tsv'
+#    rpcid = 0
     
 doplots = True
     
@@ -48,11 +51,13 @@ if doplots:
     
     p.oneplot(t,tf(x,y,z),'nT','Twinleaf VMR Mag Total Field')
     
-    p.lsd(x,sr,'nT','Twinleaf VMR Mag X')
-    
     p.threelsd(x,y,z,sr,'nT','Twinleaf VMR Mag','X','Y','Z',4)
+
+    p.lsd(t,y,sr,'nT','Twinleaf VMR Mag Y')
     
+    p.sg(x,sr,'nT','Twinleaf VMR Mag X')
     p.sg(y,sr,'nT','Twinleaf VMR Mag Y')
+    p.sg(z,sr,'nT','Twinleaf VMR Mag Z')
 
 # return t,x,y,z
 
