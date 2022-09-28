@@ -1,0 +1,831 @@
+==============================================
+RPCWalk - Rebooting SYNC4, walking commands...
+==============================================
+Reboot SYNC4, then stop it...
+""
+54321
+Looking for dev port connections...
+Port 0:
+56 4d 52 
+"VMR"
+Port 1:
+Port 2:
+Port 3:
+RPC 0: sync.downsample
+01 00 00 00 
+u32: 0x00000001 1
+s32: 1
+f32: 0.000000
+
+RPC 1: sync.unixtime
+00 00 00 00 00 00 00 00 
+u64: 0x0000000000000000 0
+s64: 0
+f64:0.000000
+
+RPC 2: sync.start (DISABLED)
+RPC 3: sync.stop (DISABLED)
+RPC 4: sync.passthrough (DISABLED)
+RPC 5: dev.start (DISABLED)
+RPC 6: dev.synctime (DISABLED)
+RPC 7: gps.ext
+00 
+u8: 0x00 0
+s8:0
+
+RPC 8: sats.data.decimation
+01 00 00 00 
+u32: 0x00000001 1
+s32: 1
+f32: 0.000000
+
+RPC 9: sats.data.active
+01 
+u8: 0x01 1
+s8:1
+
+RPC 10: sats.data.id
+00 00 
+u16: 0x0000 0
+s16:0
+
+RPC 11: gps.data.decimation
+01 00 00 00 
+u32: 0x00000001 1
+s32: 1
+f32: 0.000000
+
+RPC 12: gps.data.active
+01 
+u8: 0x01 1
+s8:1
+
+RPC 13: gps.data.cutoff
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 14: gps.data.autocutoff
+00 
+u8: 0x00 0
+s8:0
+
+RPC 15: gps.data.id
+00 80 
+u16: 0x8000 32768
+s16:-32768
+
+RPC 16: vco.data.decimation
+01 00 00 00 
+u32: 0x00000001 1
+s32: 1
+f32: 0.000000
+
+RPC 17: vco.data.active
+01 
+u8: 0x01 1
+s8:1
+
+RPC 18: vco.data.cutoff
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 19: vco.data.autocutoff
+00 
+u8: 0x00 0
+s8:0
+
+RPC 20: vco.data.id
+01 80 
+u16: 0x8001 32769
+s16:-32767
+
+RPC 21: status.data.decimation
+01 00 00 00 
+u32: 0x00000001 1
+s32: 1
+f32: 0.000000
+
+RPC 22: status.data.active
+01 
+u8: 0x01 1
+s8:1
+
+RPC 23: status.data.id
+03 00 
+u16: 0x0003 3
+s16:3
+
+RPC 24: rail.data.decimation
+01 00 00 00 
+u32: 0x00000001 1
+s32: 1
+f32: 0.000000
+
+RPC 25: rail.data.active
+01 
+u8: 0x01 1
+s8:1
+
+RPC 26: rail.data.cutoff
+00 00 00 3f 
+u32: 0x3f000000 1056964608
+s32: 1056964608
+f32: 0.500000
+
+RPC 27: rail.data.autocutoff
+01 
+u8: 0x01 1
+s8:1
+
+RPC 28: rail.data.id
+02 80 
+u16: 0x8002 32770
+s16:-32766
+
+RPC 29: dev.lock (DISABLED)
+RPC 30: dev.unlock (DISABLED)
+RPC 31: dev.systime
+4f b6 b6 73 02 00 00 00 
+u64: 0x0000000273b6b64f 10531288655
+s64: 10531288655
+f64:0.000000
+
+RPC 32: dev.reboot (DISABLED)
+RPC 33: dev.loglevel
+03 
+u8: 0x03 3
+s8:3
+
+RPC 34: dev.name
+53 59 4e 43 34 
+"SYNC4"
+
+RPC 35: dev.model
+53 59 4e 43 34 
+"SYNC4"
+
+RPC 36: dev.serial
+32 39 
+"29"
+u16: 0x3932 14642
+s16:14642
+
+RPC 37: dev.revision
+07 00 
+u16: 0x0007 7
+s16:7
+
+RPC 38: dev.version_major
+01 00 
+u16: 0x0001 1
+s16:1
+
+RPC 39: dev.version_minor
+00 00 
+u16: 0x0000 0
+s16:0
+
+RPC 40: dev.desc
+54 77 69 6e 6c 65 61 66 20 53 59 4e 43 34 20 52 
+37 20 4e 32 39 20 5b 32 30 32 32 2d 30 36 2d 30 
+31 2f 66 62 36 64 37 38 5d 
+"Twinleaf SYNC4 R7 N29 [2022-06-01/fb6d78]"
+
+RPC 41: dev.session
+22 cb 45 0c 
+u32: 0x0c45cb22 205900578
+s32: 205900578
+f32: 0.000000
+
+RPC 42: dev.firmware.serial
+32 30 32 32 2d 30 36 2d 30 31 2f 66 62 36 64 37 
+38 
+"2022-06-01/fb6d78"
+
+RPC 43: dev.port.mode.text (DISABLED)
+RPC 44: dev.port.mode.binary (DISABLED)
+RPC 45: dev.port.mode.boot_text (DISABLED)
+RPC 46: dev.port.mode.boot_binary (DISABLED)
+RPC 47: dev.port.rate
+
+RPC 48: dev.port.rate.near
+
+RPC 49: dev.port.rate.min
+
+RPC 50: dev.port.rate.max
+
+RPC 51: dev.port.count
+04 00 00 00 
+u32: 0x00000004 4
+s32: 4
+f32: 0.000000
+
+RPC 52: dev.port.maxrate
+40 42 0f 00 
+u32: 0x000f4240 1000000
+s32: 1000000
+f32: 0.000000
+
+RPC 53: rpc.list
+4f 00 
+u16: 0x004f 79
+s16:79
+
+RPC 54: rpc.info
+
+RPC 55: rpc.listinfo
+4f 00 
+u16: 0x004f 79
+s16:79
+
+RPC 56: rpc.id
+
+RPC 57: rpc.name
+
+RPC 58: data.timebase.list
+05 00 
+u16: 0x0005 5
+s16:5
+
+RPC 59: data.timebase.info
+
+RPC 60: data.timebase.send
+
+RPC 61: data.source.list
+05 00 
+u16: 0x0005 5
+s16:5
+
+RPC 62: data.source.info
+
+RPC 63: data.source.send
+
+RPC 64: data.stream.list
+03 00 
+u16: 0x0003 3
+s16:3
+
+RPC 65: data.stream.info
+
+RPC 66: data.stream.send
+
+RPC 67: data.stream.columns
+73 61 74 73 2e 6e 75 6d 62 65 72 20 73 61 74 73 
+2e 73 6e 72 20 67 70 73 2e 6c 61 74 20 67 70 73 
+2e 6c 6f 6e 20 67 70 73 2e 61 6c 74 20 76 63 6f 
+2e 64 65 6c 74 61 20 76 63 6f 2e 70 75 6c 6c 20 
+73 74 61 74 75 73 20 72 61 69 6c 2e 76 6f 6c 74 
+61 67 65 20 72 61 69 6c 2e 63 75 72 72 65 6e 74 
+"sats.number sats.snr gps.lat gps.lon gps.alt vco.delta vco.pull status rail.voltage rail.current"
+
+RPC 68: data.send_all
+""
+
+RPC 69: data.atomic
+""
+
+RPC 70: data.apply (DISABLED)
+RPC 71: data.list
+06 00 
+u16: 0x0006 6
+s16:6
+
+RPC 72: data.rate
+00 00 80 3f 
+u32: 0x3f800000 1065353216
+s32: 1065353216
+f32: 1.000000
+
+RPC 73: dev.conf.load (DISABLED)
+RPC 74: dev.conf.save (DISABLED)
+RPC 75: dev.conf.autosave
+3c 00 
+u16: 0x003c 60
+s16:60
+
+RPC 76: dev.conf.verbose
+01 
+u8: 0x01 1
+s8:1
+
+RPC 77: dev.firmware.upload (DISABLED)
+RPC 78: dev.firmware.upgrade (DISABLED)
+=================================
+RPCWalk - Walking VMR commands...
+=================================
+RPC 0: vector.cal.x0
+5e bb e3 2c 
+u32: 0x2ce3bb5e 753122142
+s32: 753122142
+f32: 0.000000
+
+RPC 1: vector.cal.y0
+ff d0 bf bd 
+u32: 0xbdbfd0ff 3183464703
+s32: -1111502593
+f32: -0.093660
+
+RPC 2: vector.cal.z0
+20 15 97 2b 
+u32: 0x2b971520 731321632
+s32: 731321632
+f32: 0.000000
+
+RPC 3: vector.cal.xx
+ff 39 85 3c 
+u32: 0x3c8539ff 1015364095
+s32: 1015364095
+f32: 0.016263
+
+RPC 4: vector.cal.xy
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 5: vector.cal.xz
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 6: vector.cal.yx
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 7: vector.cal.yy
+2a 7e 7f 3c 
+u32: 0x3c7f7e2a 1014988330
+s32: 1014988330
+f32: 0.015594
+
+RPC 8: vector.cal.yz
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 9: vector.cal.zx
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 10: vector.cal.zy
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 11: vector.cal.zz
+46 58 85 3c 
+u32: 0x3c855846 1015371846
+s32: 1015371846
+f32: 0.016277
+
+RPC 12: vector.cal.reset
+""
+
+RPC 13: accel.cal.x0
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 14: accel.cal.y0
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 15: accel.cal.z0
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 16: accel.cal.xx
+0a e8 9c 3a 
+u32: 0x3a9ce80a 983361546
+s32: 983361546
+f32: 0.001197
+
+RPC 17: accel.cal.xy
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 18: accel.cal.xz
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 19: accel.cal.yx
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 20: accel.cal.yy
+0a e8 9c 3a 
+u32: 0x3a9ce80a 983361546
+s32: 983361546
+f32: 0.001197
+
+RPC 21: accel.cal.yz
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 22: accel.cal.zx
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 23: accel.cal.zy
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 24: accel.cal.zz
+0a e8 9c 3a 
+u32: 0x3a9ce80a 983361546
+s32: 983361546
+f32: 0.001197
+
+RPC 25: accel.cal.reset
+""
+
+RPC 26: gyro.cal.x0
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 27: gyro.cal.y0
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 28: gyro.cal.z0
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 29: gyro.cal.xx
+50 a0 0b 3a 
+u32: 0x3a0ba050 973840464
+s32: 973840464
+f32: 0.000533
+
+RPC 30: gyro.cal.xy
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 31: gyro.cal.xz
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 32: gyro.cal.yx
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 33: gyro.cal.yy
+50 a0 0b 3a 
+u32: 0x3a0ba050 973840464
+s32: 973840464
+f32: 0.000533
+
+RPC 34: gyro.cal.yz
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 35: gyro.cal.zx
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 36: gyro.cal.zy
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 37: gyro.cal.zz
+50 a0 0b 3a 
+u32: 0x3a0ba050 973840464
+s32: 973840464
+f32: 0.000533
+
+RPC 38: gyro.cal.reset
+""
+
+RPC 39: dev.start (DISABLED)
+RPC 40: dev.synctime (DISABLED)
+RPC 41: dev.stop (DISABLED)
+RPC 42: vector.data.decimation
+28 00 00 00 
+u32: 0x00000028 40
+s32: 40
+f32: 0.000000
+
+RPC 43: vector.data.active
+01 
+u8: 0x01 1
+s8:1
+
+RPC 44: vector.data.cutoff
+00 00 20 41 
+u32: 0x41200000 1092616192
+s32: 1092616192
+f32: 10.000000
+
+RPC 45: vector.data.autocutoff
+01 
+u8: 0x01 1
+s8:1
+
+RPC 46: vector.data.id
+00 80 
+u16: 0x8000 32768
+s16:-32768
+
+RPC 47: accel.data.decimation
+01 00 00 00 
+u32: 0x00000001 1
+s32: 1
+f32: 0.000000
+
+RPC 48: accel.data.active
+01 
+u8: 0x01 1
+s8:1
+
+RPC 49: accel.data.cutoff
+00 00 20 41 
+u32: 0x41200000 1092616192
+s32: 1092616192
+f32: 10.000000
+
+RPC 50: accel.data.autocutoff
+01 
+u8: 0x01 1
+s8:1
+
+RPC 51: accel.data.id
+01 80 
+u16: 0x8001 32769
+s16:-32767
+
+RPC 52: gyro.data.decimation
+01 00 00 00 
+u32: 0x00000001 1
+s32: 1
+f32: 0.000000
+
+RPC 53: gyro.data.active
+01 
+u8: 0x01 1
+s8:1
+
+RPC 54: gyro.data.cutoff
+00 00 20 41 
+u32: 0x41200000 1092616192
+s32: 1092616192
+f32: 10.000000
+
+RPC 55: gyro.data.autocutoff
+01 
+u8: 0x01 1
+s8:1
+
+RPC 56: gyro.data.id
+02 80 
+u16: 0x8002 32770
+s16:-32766
+
+RPC 57: bar.data.decimation
+01 00 00 00 
+u32: 0x00000001 1
+s32: 1
+f32: 0.000000
+
+RPC 58: bar.data.active
+01 
+u8: 0x01 1
+s8:1
+
+RPC 59: bar.data.cutoff
+00 00 20 41 
+u32: 0x41200000 1092616192
+s32: 1092616192
+f32: 10.000000
+
+RPC 60: bar.data.autocutoff
+01 
+u8: 0x01 1
+s8:1
+
+RPC 61: bar.data.id
+03 80 
+u16: 0x8003 32771
+s16:-32765
+
+RPC 62: therm.data.decimation
+01 00 00 00 
+u32: 0x00000001 1
+s32: 1
+f32: 0.000000
+
+RPC 63: therm.data.active
+01 
+u8: 0x01 1
+s8:1
+
+RPC 64: therm.data.cutoff
+00 00 20 41 
+u32: 0x41200000 1092616192
+s32: 1092616192
+f32: 10.000000
+
+RPC 65: therm.data.autocutoff
+01 
+u8: 0x01 1
+s8:1
+
+RPC 66: therm.data.id
+04 80 
+u16: 0x8004 32772
+s16:-32764
+
+RPC 67: dev.lock (DISABLED)
+RPC 68: dev.unlock (DISABLED)
+RPC 69: dev.systime
+f8 15 e2 80 3d 16 00 00 
+u64: 0x0000163d80e215f8 24453411116536
+s64: 24453411116536
+f64:0.000000
+
+RPC 70: dev.reboot (DISABLED)
+RPC 71: dev.loglevel
+03 
+u8: 0x03 3
+s8:3
+
+RPC 72: dev.name
+56 4d 52 
+"VMR"
+
+RPC 73: dev.model
+56 4d 52 
+"VMR"
+
+RPC 74: dev.serial
+31 35 38 
+"158"
+
+RPC 75: dev.revision
+0c 00 
+u16: 0x000c 12
+s16:12
+
+RPC 76: dev.version_major
+01 00 
+u16: 0x0001 1
+s16:1
+
+RPC 77: dev.version_minor
+00 00 
+u16: 0x0000 0
+s16:0
+
+RPC 78: dev.desc
+54 77 69 6e 6c 65 61 66 20 56 4d 52 20 52 31 32 
+20 4e 31 35 38 20 5b 32 30 32 31 2d 30 33 2d 31 
+36 2f 63 37 63 35 38 39 5d 
+"Twinleaf VMR R12 N158 [2021-03-16/c7c589]"
+
+RPC 79: dev.session
+a1 8a da c0 
+u32: 0xc0da8aa1 3235547809
+s32: -1059419487
+f32: -6.829422
+
+RPC 80: dev.firmware.serial
+32 30 32 31 2d 30 33 2d 31 36 2f 63 37 63 35 38 
+39 
+"2021-03-16/c7c589"
+
+RPC 81: dev.port.boot_mode (DISABLED)
+RPC 82: dev.port.text (DISABLED)
+RPC 83: dev.port.binary (DISABLED)
+RPC 84: dev.port.count
+00 00 00 00 
+u32: 0x00000000 0
+s32: 0
+f32: 0.000000
+
+RPC 85: rpc.list
+6f 00 
+u16: 0x006f 111
+s16:111
+
+RPC 86: rpc.info
+
+RPC 87: rpc.listinfo
+6f 00 
+u16: 0x006f 111
+s16:111
+
+RPC 88: rpc.id
+
+RPC 89: rpc.name
+
+RPC 90: data.timebase.list
+02 00 
+u16: 0x0002 2
+s16:2
+
+RPC 91: data.timebase.info
+
+RPC 92: data.timebase.send
+
+RPC 93: data.source.list
+05 00 
+u16: 0x0005 5
+s16:5
+
+RPC 94: data.source.info
+
+RPC 95: data.source.send
+
+RPC 96: data.stream.list
+01 00 
+u16: 0x0001 1
+s16:1
+
+RPC 97: data.stream.info
+
+RPC 98: data.stream.send
+
+RPC 99: data.stream.columns
+76 65 63 74 6f 72 2e 78 20 76 65 63 74 6f 72 2e 
+79 20 76 65 63 74 6f 72 2e 7a 20 61 63 63 65 6c 
+2e 78 20 61 63 63 65 6c 2e 79 20 61 63 63 65 6c 
+2e 7a 20 67 79 72 6f 2e 78 20 67 79 72 6f 2e 79 
+20 67 79 72 6f 2e 7a 20 62 61 72 20 74 68 65 72 
+6d 
+"vector.x vector.y vector.z accel.x accel.y accel.z gyro.x gyro.y gyro.z bar therm"
+
+RPC 100: data.send_all (DISABLED)
+RPC 101: data.atomic
+""
+
+RPC 102: data.apply (DISABLED)
+RPC 103: data.list
+06 00 
+u16: 0x0006 6
+s16:6
+
+RPC 104: data.rate
+00 00 a0 41 
+u32: 0x41a00000 1101004800
+s32: 1101004800
+f32: 20.000000
+
+RPC 105: dev.conf.load (DISABLED)
+RPC 106: dev.conf.save (DISABLED)
+RPC 107: dev.conf.autosave
+3c 00 
+u16: 0x003c 60
+s16:60
+
+RPC 108: dev.conf.verbose
+01 
+u8: 0x01 1
+s8:1
+
+RPC 109: dev.firmware.upload (DISABLED)
+RPC 110: dev.firmware.upgrade (DISABLED)
