@@ -1,0 +1,806 @@
+#!/usr/bin/bash
+
+# Utility to passively collect RPC command responses for every RPC command
+#  except for state-changing ones like start/stop/reboot
+
+# Path to rpc utility
+RPC=~/Code/tio-tools/bin/tio-rpc
+
+# Connection to SYNC4
+URL=/dev/ttyACM0
+
+# Sensor ID (SYNC4 input port number for VMR)
+ID=0
+
+# Wait in seconds after sending an RPC request
+DELAY=0.1
+
+echo ==============================================
+echo RPCWalk - Rebooting SYNC4, walking commands...
+echo ==============================================
+
+# Prep - reboot and stop everything
+echo Reboot SYNC4, then stop it...
+$RPC -r $URL dev.reboot
+echo -n 5 && sleep 1 && echo -n 4 && sleep 1 && echo -n 3 && sleep 1 && echo -n 2 && sleep 1 && echo -n 1 && sleep 1 
+
+$RPC -r $URL sync.stop
+echo && sleep $DELAY
+
+echo Looking for dev port connections...
+echo Port 0:
+timeout 1s $RPC -r $URL -s 0 dev.name
+echo Port 1:
+timeout 1s $RPC -r $URL -s 1 dev.name
+echo Port 2:
+timeout 1s $RPC -r $URL -s 2 dev.name
+echo Port 3:
+timeout 1s $RPC -r $URL -s 3 dev.name
+
+
+
+echo RPC 0: sync.downsample
+$RPC -r $URL sync.downsample
+echo && sleep $DELAY
+
+echo RPC 1: sync.unixtime
+$RPC -r $URL sync.unixtime
+echo && sleep $DELAY
+
+echo RPC 2: sync.start \(DISABLED\)
+#$RPC -r $URL sync.start
+#echo && sleep $DELAY
+
+echo RPC 3: sync.stop \(DISABLED\)
+#$RPC -r $URL sync.stop
+#echo && sleep $DELAY
+
+echo RPC 4: sync.passthrough \(DISABLED\)
+#$RPC -r $URL sync.passthrough
+#echo && sleep $DELAY
+
+echo RPC 5: dev.start \(DISABLED\)
+#$RPC -r $URL dev.start
+#echo && sleep $DELAY
+
+echo RPC 6: dev.synctime \(DISABLED\)
+#$RPC -r $URL dev.synctime
+#echo && sleep $DELAY
+
+echo RPC 7: gps.ext
+$RPC -r $URL gps.ext
+echo && sleep $DELAY
+
+echo RPC 8: sats.data.decimation
+$RPC -r $URL sats.data.decimation
+echo && sleep $DELAY
+
+echo RPC 9: sats.data.active
+$RPC -r $URL sats.data.active
+echo && sleep $DELAY
+
+echo RPC 10: sats.data.id
+$RPC -r $URL sats.data.id
+echo && sleep $DELAY
+
+echo RPC 11: gps.data.decimation
+$RPC -r $URL gps.data.decimation
+echo && sleep $DELAY
+
+echo RPC 12: gps.data.active
+$RPC -r $URL gps.data.active
+echo && sleep $DELAY
+
+echo RPC 13: gps.data.cutoff
+$RPC -r $URL gps.data.cutoff
+echo && sleep $DELAY
+
+echo RPC 14: gps.data.autocutoff
+$RPC -r $URL gps.data.autocutoff
+echo && sleep $DELAY
+
+echo RPC 15: gps.data.id
+$RPC -r $URL gps.data.id
+echo && sleep $DELAY
+
+echo RPC 16: vco.data.decimation
+$RPC -r $URL vco.data.decimation
+echo && sleep $DELAY
+
+echo RPC 17: vco.data.active
+$RPC -r $URL vco.data.active
+echo && sleep $DELAY
+
+echo RPC 18: vco.data.cutoff
+$RPC -r $URL vco.data.cutoff
+echo && sleep $DELAY
+
+echo RPC 19: vco.data.autocutoff
+$RPC -r $URL vco.data.autocutoff
+echo && sleep $DELAY
+
+echo RPC 20: vco.data.id
+$RPC -r $URL vco.data.id
+echo && sleep $DELAY
+
+echo RPC 21: status.data.decimation
+$RPC -r $URL status.data.decimation
+echo && sleep $DELAY
+
+echo RPC 22: status.data.active
+$RPC -r $URL status.data.active
+echo && sleep $DELAY
+
+echo RPC 23: status.data.id
+$RPC -r $URL status.data.id
+echo && sleep $DELAY
+
+echo RPC 24: rail.data.decimation
+$RPC -r $URL rail.data.decimation
+echo && sleep $DELAY
+
+echo RPC 25: rail.data.active
+$RPC -r $URL rail.data.active
+echo && sleep $DELAY
+
+echo RPC 26: rail.data.cutoff
+$RPC -r $URL rail.data.cutoff
+echo && sleep $DELAY
+
+echo RPC 27: rail.data.autocutoff
+$RPC -r $URL rail.data.autocutoff
+echo && sleep $DELAY
+
+echo RPC 28: rail.data.id
+$RPC -r $URL rail.data.id
+echo && sleep $DELAY
+
+echo RPC 29: dev.lock \(DISABLED\)
+#$RPC -r $URL dev.lock
+#echo && sleep $DELAY
+
+echo RPC 30: dev.unlock \(DISABLED\)
+#$RPC -r $URL dev.unlock
+#echo && sleep $DELAY
+
+echo RPC 31: dev.systime
+$RPC -r $URL dev.systime
+echo && sleep $DELAY
+
+echo RPC 32: dev.reboot \(DISABLED\)
+#$RPC -r $URL dev.reboot
+#echo && sleep $DELAY
+
+echo RPC 33: dev.loglevel
+$RPC -r $URL dev.loglevel
+echo && sleep $DELAY
+
+echo RPC 34: dev.name
+$RPC -r $URL dev.name
+echo && sleep $DELAY
+
+echo RPC 35: dev.model
+$RPC -r $URL dev.model
+echo && sleep $DELAY
+
+echo RPC 36: dev.serial
+$RPC -r $URL dev.serial
+echo && sleep $DELAY
+
+echo RPC 37: dev.revision
+$RPC -r $URL dev.revision
+echo && sleep $DELAY
+
+echo RPC 38: dev.version_major
+$RPC -r $URL dev.version_major
+echo && sleep $DELAY
+
+echo RPC 39: dev.version_minor
+$RPC -r $URL dev.version_minor
+echo && sleep $DELAY
+
+echo RPC 40: dev.desc
+$RPC -r $URL dev.desc
+echo && sleep $DELAY
+
+echo RPC 41: dev.session
+$RPC -r $URL dev.session
+echo && sleep $DELAY
+
+echo RPC 42: dev.firmware.serial
+$RPC -r $URL dev.firmware.serial
+echo && sleep $DELAY
+
+echo RPC 43: dev.port.mode.text \(DISABLED\)
+#$RPC -r $URL dev.port.mode.text
+#echo && sleep $DELAY
+
+echo RPC 44: dev.port.mode.binary \(DISABLED\)
+#$RPC -r $URL dev.port.mode.binary
+#echo && sleep $DELAY
+
+echo RPC 45: dev.port.mode.boot_text \(DISABLED\)
+#$RPC -r $URL dev.port.mode.boot_text
+#echo && sleep $DELAY
+
+echo RPC 46: dev.port.mode.boot_binary \(DISABLED\)
+#$RPC -r $URL dev.port.mode.boot_binary
+#echo && sleep $DELAY
+
+echo RPC 47: dev.port.rate
+$RPC -r $URL dev.port.rate
+echo && sleep $DELAY
+
+echo RPC 48: dev.port.rate.near
+$RPC -r $URL dev.port.rate.near
+echo && sleep $DELAY
+
+echo RPC 49: dev.port.rate.min
+$RPC -r $URL dev.port.rate.min
+echo && sleep $DELAY
+
+echo RPC 50: dev.port.rate.max
+$RPC -r $URL dev.port.rate.max
+echo && sleep $DELAY
+
+echo RPC 51: dev.port.count
+$RPC -r $URL dev.port.count
+echo && sleep $DELAY
+
+echo RPC 52: dev.port.maxrate
+$RPC -r $URL dev.port.maxrate
+echo && sleep $DELAY
+
+echo RPC 53: rpc.list
+$RPC -r $URL rpc.list
+echo && sleep $DELAY
+
+echo RPC 54: rpc.info
+$RPC -r $URL rpc.info
+echo && sleep $DELAY
+
+echo RPC 55: rpc.listinfo
+$RPC -r $URL rpc.listinfo
+echo && sleep $DELAY
+
+echo RPC 56: rpc.id
+$RPC -r $URL rpc.id
+echo && sleep $DELAY
+
+echo RPC 57: rpc.name
+$RPC -r $URL rpc.name
+echo && sleep $DELAY
+
+echo RPC 58: data.timebase.list
+$RPC -r $URL data.timebase.list
+echo && sleep $DELAY
+
+echo RPC 59: data.timebase.info
+$RPC -r $URL data.timebase.info
+echo && sleep $DELAY
+
+echo RPC 60: data.timebase.send
+$RPC -r $URL data.timebase.send
+echo && sleep $DELAY
+
+echo RPC 61: data.source.list
+$RPC -r $URL data.source.list
+echo && sleep $DELAY
+
+echo RPC 62: data.source.info
+$RPC -r $URL data.source.info
+echo && sleep $DELAY
+
+echo RPC 63: data.source.send
+$RPC -r $URL data.source.send
+echo && sleep $DELAY
+
+echo RPC 64: data.stream.list
+$RPC -r $URL data.stream.list
+echo && sleep $DELAY
+
+echo RPC 65: data.stream.info
+$RPC -r $URL data.stream.info
+echo && sleep $DELAY
+
+echo RPC 66: data.stream.send
+$RPC -r $URL data.stream.send
+echo && sleep $DELAY
+
+echo RPC 67: data.stream.columns
+$RPC -r $URL data.stream.columns
+echo && sleep $DELAY
+
+echo RPC 68: data.send_all
+$RPC -r $URL data.send_all
+echo && sleep $DELAY
+
+echo RPC 69: data.atomic
+$RPC -r $URL data.atomic
+echo && sleep $DELAY
+
+echo RPC 70: data.apply \(DISABLED\)
+#$RPC -r $URL data.apply
+#echo && sleep $DELAY
+
+echo RPC 71: data.list
+$RPC -r $URL data.list
+echo && sleep $DELAY
+
+echo RPC 72: data.rate
+$RPC -r $URL data.rate
+echo && sleep $DELAY
+
+echo RPC 73: dev.conf.load \(DISABLED\)
+#$RPC -r $URL dev.conf.load
+#echo && sleep $DELAY
+
+echo RPC 74: dev.conf.save \(DISABLED\)
+#$RPC -r $URL dev.conf.save
+#echo && sleep $DELAY
+
+echo RPC 75: dev.conf.autosave
+$RPC -r $URL dev.conf.autosave
+echo && sleep $DELAY
+
+echo RPC 76: dev.conf.verbose
+$RPC -r $URL dev.conf.verbose
+echo && sleep $DELAY
+
+echo RPC 77: dev.firmware.upload \(DISABLED\)
+#$RPC -r $URL dev.firmware.upload
+#echo && sleep $DELAY
+
+echo RPC 78: dev.firmware.upgrade \(DISABLED\)
+#$RPC -r $URL dev.firmware.upgrade
+#echo && sleep $DELAY
+
+echo =================================
+echo RPCWalk - Walking VMR commands...
+echo =================================
+
+
+echo RPC 0: vector.cal.x0
+$RPC -r $URL -s $ID vector.cal.x0
+echo && sleep $DELAY
+
+echo RPC 1: vector.cal.y0
+$RPC -r $URL -s $ID vector.cal.y0
+echo && sleep $DELAY
+
+echo RPC 2: vector.cal.z0
+$RPC -r $URL -s $ID vector.cal.z0
+echo && sleep $DELAY
+
+echo RPC 3: vector.cal.xx
+$RPC -r $URL -s $ID vector.cal.xx
+echo && sleep $DELAY
+
+echo RPC 4: vector.cal.xy
+$RPC -r $URL -s $ID vector.cal.xy
+echo && sleep $DELAY
+
+echo RPC 5: vector.cal.xz
+$RPC -r $URL -s $ID vector.cal.xz
+echo && sleep $DELAY
+
+echo RPC 6: vector.cal.yx
+$RPC -r $URL -s $ID vector.cal.yx
+echo && sleep $DELAY
+
+echo RPC 7: vector.cal.yy
+$RPC -r $URL -s $ID vector.cal.yy
+echo && sleep $DELAY
+
+echo RPC 8: vector.cal.yz
+$RPC -r $URL -s $ID vector.cal.yz
+echo && sleep $DELAY
+
+echo RPC 9: vector.cal.zx
+$RPC -r $URL -s $ID vector.cal.zx
+echo && sleep $DELAY
+
+echo RPC 10: vector.cal.zy
+$RPC -r $URL -s $ID vector.cal.zy
+echo && sleep $DELAY
+
+echo RPC 11: vector.cal.zz
+$RPC -r $URL -s $ID vector.cal.zz
+echo && sleep $DELAY
+
+echo RPC 12: vector.cal.reset
+$RPC -r $URL -s $ID vector.cal.reset
+echo && sleep $DELAY
+
+echo RPC 13: accel.cal.x0
+$RPC -r $URL -s $ID accel.cal.x0
+echo && sleep $DELAY
+
+echo RPC 14: accel.cal.y0
+$RPC -r $URL -s $ID accel.cal.y0
+echo && sleep $DELAY
+
+echo RPC 15: accel.cal.z0
+$RPC -r $URL -s $ID accel.cal.z0
+echo && sleep $DELAY
+
+echo RPC 16: accel.cal.xx
+$RPC -r $URL -s $ID accel.cal.xx
+echo && sleep $DELAY
+
+echo RPC 17: accel.cal.xy
+$RPC -r $URL -s $ID accel.cal.xy
+echo && sleep $DELAY
+
+echo RPC 18: accel.cal.xz
+$RPC -r $URL -s $ID accel.cal.xz
+echo && sleep $DELAY
+
+echo RPC 19: accel.cal.yx
+$RPC -r $URL -s $ID accel.cal.yx
+echo && sleep $DELAY
+
+echo RPC 20: accel.cal.yy
+$RPC -r $URL -s $ID accel.cal.yy
+echo && sleep $DELAY
+
+echo RPC 21: accel.cal.yz
+$RPC -r $URL -s $ID accel.cal.yz
+echo && sleep $DELAY
+
+echo RPC 22: accel.cal.zx
+$RPC -r $URL -s $ID accel.cal.zx
+echo && sleep $DELAY
+
+echo RPC 23: accel.cal.zy
+$RPC -r $URL -s $ID accel.cal.zy
+echo && sleep $DELAY
+
+echo RPC 24: accel.cal.zz
+$RPC -r $URL -s $ID accel.cal.zz
+echo && sleep $DELAY
+
+echo RPC 25: accel.cal.reset
+$RPC -r $URL -s $ID accel.cal.reset
+echo && sleep $DELAY
+
+echo RPC 26: gyro.cal.x0
+$RPC -r $URL -s $ID gyro.cal.x0
+echo && sleep $DELAY
+
+echo RPC 27: gyro.cal.y0
+$RPC -r $URL -s $ID gyro.cal.y0
+echo && sleep $DELAY
+
+echo RPC 28: gyro.cal.z0
+$RPC -r $URL -s $ID gyro.cal.z0
+echo && sleep $DELAY
+
+echo RPC 29: gyro.cal.xx
+$RPC -r $URL -s $ID gyro.cal.xx
+echo && sleep $DELAY
+
+echo RPC 30: gyro.cal.xy
+$RPC -r $URL -s $ID gyro.cal.xy
+echo && sleep $DELAY
+
+echo RPC 31: gyro.cal.xz
+$RPC -r $URL -s $ID gyro.cal.xz
+echo && sleep $DELAY
+
+echo RPC 32: gyro.cal.yx
+$RPC -r $URL -s $ID gyro.cal.yx
+echo && sleep $DELAY
+
+echo RPC 33: gyro.cal.yy
+$RPC -r $URL -s $ID gyro.cal.yy
+echo && sleep $DELAY
+
+echo RPC 34: gyro.cal.yz
+$RPC -r $URL -s $ID gyro.cal.yz
+echo && sleep $DELAY
+
+echo RPC 35: gyro.cal.zx
+$RPC -r $URL -s $ID gyro.cal.zx
+echo && sleep $DELAY
+
+echo RPC 36: gyro.cal.zy
+$RPC -r $URL -s $ID gyro.cal.zy
+echo && sleep $DELAY
+
+echo RPC 37: gyro.cal.zz
+$RPC -r $URL -s $ID gyro.cal.zz
+echo && sleep $DELAY
+
+echo RPC 38: gyro.cal.reset
+$RPC -r $URL -s $ID gyro.cal.reset
+echo && sleep $DELAY
+
+echo RPC 39: dev.start \(DISABLED\)
+#$RPC -r $URL -s $ID dev.start
+#echo && sleep $DELAY
+
+echo RPC 40: dev.synctime \(DISABLED\)
+#$RPC -r $URL -s $ID dev.synctime
+#echo && sleep $DELAY
+
+echo RPC 41: dev.stop \(DISABLED\)
+#$RPC -r $URL -s $ID dev.stop
+#echo && sleep $DELAY
+
+echo RPC 42: vector.data.decimation
+$RPC -r $URL -s $ID vector.data.decimation
+echo && sleep $DELAY
+
+echo RPC 43: vector.data.active
+$RPC -r $URL -s $ID vector.data.active
+echo && sleep $DELAY
+
+echo RPC 44: vector.data.cutoff
+$RPC -r $URL -s $ID vector.data.cutoff
+echo && sleep $DELAY
+
+echo RPC 45: vector.data.autocutoff
+$RPC -r $URL -s $ID vector.data.autocutoff
+echo && sleep $DELAY
+
+echo RPC 46: vector.data.id
+$RPC -r $URL -s $ID vector.data.id
+echo && sleep $DELAY
+
+echo RPC 47: accel.data.decimation
+$RPC -r $URL -s $ID accel.data.decimation
+echo && sleep $DELAY
+
+echo RPC 48: accel.data.active
+$RPC -r $URL -s $ID accel.data.active
+echo && sleep $DELAY
+
+echo RPC 49: accel.data.cutoff
+$RPC -r $URL -s $ID accel.data.cutoff
+echo && sleep $DELAY
+
+echo RPC 50: accel.data.autocutoff
+$RPC -r $URL -s $ID accel.data.autocutoff
+echo && sleep $DELAY
+
+echo RPC 51: accel.data.id
+$RPC -r $URL -s $ID accel.data.id
+echo && sleep $DELAY
+
+echo RPC 52: gyro.data.decimation
+$RPC -r $URL -s $ID gyro.data.decimation
+echo && sleep $DELAY
+
+echo RPC 53: gyro.data.active
+$RPC -r $URL -s $ID gyro.data.active
+echo && sleep $DELAY
+
+echo RPC 54: gyro.data.cutoff
+$RPC -r $URL -s $ID gyro.data.cutoff
+echo && sleep $DELAY
+
+echo RPC 55: gyro.data.autocutoff
+$RPC -r $URL -s $ID gyro.data.autocutoff
+echo && sleep $DELAY
+
+echo RPC 56: gyro.data.id
+$RPC -r $URL -s $ID gyro.data.id
+echo && sleep $DELAY
+
+echo RPC 57: bar.data.decimation
+$RPC -r $URL -s $ID bar.data.decimation
+echo && sleep $DELAY
+
+echo RPC 58: bar.data.active
+$RPC -r $URL -s $ID bar.data.active
+echo && sleep $DELAY
+
+echo RPC 59: bar.data.cutoff
+$RPC -r $URL -s $ID bar.data.cutoff
+echo && sleep $DELAY
+
+echo RPC 60: bar.data.autocutoff
+$RPC -r $URL -s $ID bar.data.autocutoff
+echo && sleep $DELAY
+
+echo RPC 61: bar.data.id
+$RPC -r $URL -s $ID bar.data.id
+echo && sleep $DELAY
+
+echo RPC 62: therm.data.decimation
+$RPC -r $URL -s $ID therm.data.decimation
+echo && sleep $DELAY
+
+echo RPC 63: therm.data.active
+$RPC -r $URL -s $ID therm.data.active
+echo && sleep $DELAY
+
+echo RPC 64: therm.data.cutoff
+$RPC -r $URL -s $ID therm.data.cutoff
+echo && sleep $DELAY
+
+echo RPC 65: therm.data.autocutoff
+$RPC -r $URL -s $ID therm.data.autocutoff
+echo && sleep $DELAY
+
+echo RPC 66: therm.data.id
+$RPC -r $URL -s $ID therm.data.id
+echo && sleep $DELAY
+
+echo RPC 67: dev.lock \(DISABLED\)
+#$RPC -r $URL -s $ID dev.lock
+#echo && sleep $DELAY
+
+echo RPC 68: dev.unlock \(DISABLED\)
+#$RPC -r $URL -s $ID dev.unlock
+#echo && sleep $DELAY
+
+echo RPC 69: dev.systime
+$RPC -r $URL -s $ID dev.systime
+echo && sleep $DELAY
+
+echo RPC 70: dev.reboot \(DISABLED\)
+#$RPC -r $URL -s $ID dev.reboot
+#echo && sleep $DELAY
+
+echo RPC 71: dev.loglevel
+$RPC -r $URL -s $ID dev.loglevel
+echo && sleep $DELAY
+
+echo RPC 72: dev.name
+$RPC -r $URL -s $ID dev.name
+echo && sleep $DELAY
+
+echo RPC 73: dev.model
+$RPC -r $URL -s $ID dev.model
+echo && sleep $DELAY
+
+echo RPC 74: dev.serial
+$RPC -r $URL -s $ID dev.serial
+echo && sleep $DELAY
+
+echo RPC 75: dev.revision
+$RPC -r $URL -s $ID dev.revision
+echo && sleep $DELAY
+
+echo RPC 76: dev.version_major
+$RPC -r $URL -s $ID dev.version_major
+echo && sleep $DELAY
+
+echo RPC 77: dev.version_minor
+$RPC -r $URL -s $ID dev.version_minor
+echo && sleep $DELAY
+
+echo RPC 78: dev.desc
+$RPC -r $URL -s $ID dev.desc
+echo && sleep $DELAY
+
+echo RPC 79: dev.session
+$RPC -r $URL -s $ID dev.session
+echo && sleep $DELAY
+
+echo RPC 80: dev.firmware.serial
+$RPC -r $URL -s $ID dev.firmware.serial
+echo && sleep $DELAY
+
+echo RPC 81: dev.port.boot_mode \(DISABLED\)
+#$RPC -r $URL -s $ID dev.port.boot_mode
+#echo && sleep $DELAY
+
+echo RPC 82: dev.port.text \(DISABLED\)
+#$RPC -r $URL -s $ID dev.port.text
+#echo && sleep $DELAY
+
+echo RPC 83: dev.port.binary \(DISABLED\)
+#$RPC -r $URL -s $ID dev.port.binary
+#echo && sleep $DELAY
+
+echo RPC 84: dev.port.count
+$RPC -r $URL -s $ID dev.port.count
+echo && sleep $DELAY
+
+echo RPC 85: rpc.list
+$RPC -r $URL -s $ID rpc.list
+echo && sleep $DELAY
+
+echo RPC 86: rpc.info
+$RPC -r $URL -s $ID rpc.info
+echo && sleep $DELAY
+
+echo RPC 87: rpc.listinfo
+$RPC -r $URL -s $ID rpc.listinfo
+echo && sleep $DELAY
+
+echo RPC 88: rpc.id
+$RPC -r $URL -s $ID rpc.id
+echo && sleep $DELAY
+
+echo RPC 89: rpc.name
+$RPC -r $URL -s $ID rpc.name
+echo && sleep $DELAY
+
+echo RPC 90: data.timebase.list
+$RPC -r $URL -s $ID data.timebase.list
+echo && sleep $DELAY
+
+echo RPC 91: data.timebase.info
+$RPC -r $URL -s $ID data.timebase.info
+echo && sleep $DELAY
+
+echo RPC 92: data.timebase.send
+$RPC -r $URL -s $ID data.timebase.send
+echo && sleep $DELAY
+
+echo RPC 93: data.source.list
+$RPC -r $URL -s $ID data.source.list
+echo && sleep $DELAY
+
+echo RPC 94: data.source.info
+$RPC -r $URL -s $ID data.source.info
+echo && sleep $DELAY
+
+echo RPC 95: data.source.send
+$RPC -r $URL -s $ID data.source.send
+echo && sleep $DELAY
+
+echo RPC 96: data.stream.list
+$RPC -r $URL -s $ID data.stream.list
+echo && sleep $DELAY
+
+echo RPC 97: data.stream.info
+$RPC -r $URL -s $ID data.stream.info
+echo && sleep $DELAY
+
+echo RPC 98: data.stream.send
+$RPC -r $URL -s $ID data.stream.send
+echo && sleep $DELAY
+
+echo RPC 99: data.stream.columns
+$RPC -r $URL -s $ID data.stream.columns
+echo && sleep $DELAY
+
+echo RPC 100: data.send_all \(DISABLED\)
+#$RPC -r $URL -s $ID data.send_all
+#echo && sleep $DELAY
+
+echo RPC 101: data.atomic
+$RPC -r $URL -s $ID data.atomic
+echo && sleep $DELAY
+
+echo RPC 102: data.apply \(DISABLED\)
+#$RPC -r $URL -s $ID data.apply
+#echo && sleep $DELAY
+
+echo RPC 103: data.list
+$RPC -r $URL -s $ID data.list
+echo && sleep $DELAY
+
+echo RPC 104: data.rate
+$RPC -r $URL -s $ID data.rate
+echo && sleep $DELAY
+
+echo RPC 105: dev.conf.load \(DISABLED\)
+#$RPC -r $URL -s $ID dev.conf.load
+#echo && sleep $DELAY
+
+echo RPC 106: dev.conf.save \(DISABLED\)
+#$RPC -r $URL -s $ID dev.conf.save
+#echo && sleep $DELAY
+
+echo RPC 107: dev.conf.autosave
+$RPC -r $URL -s $ID dev.conf.autosave
+echo && sleep $DELAY
+
+echo RPC 108: dev.conf.verbose
+$RPC -r $URL -s $ID dev.conf.verbose
+echo && sleep $DELAY
+
+echo RPC 109: dev.firmware.upload \(DISABLED\)
+#$RPC -r $URL -s $ID dev.firmware.upload
+#echo && sleep $DELAY
+
+echo RPC 110: dev.firmware.upgrade \(DISABLED\)
+#$RPC -r $URL -s $ID dev.firmware.upgrade
+#echo && sleep $DELAY
+

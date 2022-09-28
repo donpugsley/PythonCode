@@ -1,0 +1,144 @@
+#!/usr/bin/bash
+
+# Path to rpc utility
+RPC=~/Code/tio-tools/bin/tio-rpc
+
+# Connection to SYNC4
+URL=/dev/ttyACM0
+
+# Sensor ID (SYNC4 input port number for VMR)
+ID=0
+
+# Wait in seconds after sending an RPC request
+DELAY=0.1
+
+# VMR Sampling Rate
+VMRATE=20.0
+
+# SYNC4 Sampling Rate HAS TO BE 0!?
+SYNCRATE=0.0
+
+echo ================================
+echo Initializing SYNC4 and VMR$ID...
+echo ================================
+
+# Prep - reboot and stop everything
+echo Reboot SYNC4, then stop it...
+$RPC -r $URL dev.reboot
+echo -n 5 && sleep 1 && echo -n 4 && sleep 1 && echo -n 3 && sleep 1 && echo -n 2 && sleep 1 && echo -n 1 && sleep 1 
+
+# Stop data logging
+echo Stop SYNC...
+$RPC -r $URL sync.stop
+sleep $DELAY
+
+# Stop VMR if it is running...
+echo Stop VMR...
+$RPC -r $URL -s $ID dev.stop
+sleep $DELAY
+
+
+
+# SYNC4 init sequence
+echo Initializing SYNC4...
+$RPC -r $URL dev.desc
+sleep $DELAY
+echo Autosave Off
+$RPC -r $URL dev.conf.autosave i16:-1
+sleep $DELAY
+
+#echo SYNC4 Sampling Rate $SYNCRATE Hz... 
+#$RPC -r $URL data.rate f32:$SYNCRATE
+#sleep $DELAY
+
+echo GPS not active, ext=0, autocutoff=0...
+$RPC -r $URL gps.data.active  u8:0
+sleep $DELAY
+# NOT gps.data.ext!
+$RPC -r $URL gps.ext  u8:0
+sleep $DELAY
+$RPC -r $URL gps.data.autocutoff u8:0
+sleep $DELAY
+
+echo VCO not active, autocutoff=0...
+$RPC -r $URL vco.data.active  u8:0
+sleep $DELAY
+$RPC -r $URL vco.data.autocutoff u8:0
+sleep $DELAY
+
+echo SATS not active...
+$RPC -r $URL sats.data.active u8:0
+sleep $DELAY
+
+echo STATUS active...
+$RPC -r $URL status.data.active u8:1
+sleep $DELAY
+
+echo RAIL not active, autocutoff=0...
+$RPC -r $URL rail.data.active u8:0
+sleep $DELAY
+$RPC -r $URL rail.data.autocutoff u8:0
+sleep $DELAY
+
+echo SYNC4 downsample=4...
+$RPC -r $URL sync.downsample u32:1
+sleep $DELAY
+
+
+# VMR
+
+echo Initializing VMR$ID...
+
+$RPC -r $URL -s $ID dev.stop
+sleep $DELAY
+$RPC -r $URL -s $ID dev.desc
+sleep $DELAY
+
+#echo VMR sampling rate $VMRATE Hz... 
+#$RPC -r $URL -s $ID data.rate f32:$VMRATE
+#sleep $DELAY
+
+#echo   Resulting decimation factor is:
+#$RPC -r $URL -s $ID vector.data.decimation
+#sleep $DELAY
+
+echo VECTOR active, setting to 20 Hz sampling rate...
+$RPC -r $URL -s $ID data.rate f32:20.0
+sleep $DELAY
+$RPC -r $URL -s $ID vector.data.decimation
+sleep $DELAY
+$RPC -r $URL -s $ID vector.data.active u8:1
+sleep $DELAY
+
+echo ACCEL active...
+$RPC -r $URL -s $ID accel.data.active u8:1
+sleep $DELAY
+
+echo GYRO active...
+$RPC -r $URL -s $ID gyro.data.active u8:1
+sleep $DELAY
+
+echo BAR active...
+$RPC -r $URL -s $ID bar.data.active u8:1
+sleep $DELAY
+
+echo THERM active...
+$RPC -r $URL -s $ID therm.data.active u8:1
+sleep $DELAY
+
+
+
+#echo Starting SYNC4 data recording...
+#$RPC -r $URL sync.start
+#sleep $DELAY
+echo Starting VMR...
+$RPC -r $URL -s $ID dev.start
+sleep $DELAY
+sleep $DELAY
+sleep $DELAY
+sleep $DELAY
+sleep $DELAY
+
+#tio-dataview
+
+
