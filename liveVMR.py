@@ -7,26 +7,32 @@ import math
 import collections
 import matplotlib.pyplot
 import matplotlib.animation
+import matplotlib.ticker as mtick
 import tldevice
 import argparse
 
-WINDOWSEC = 5 # Seconds of data in plot window
-SR = 10.0 # VMR Sampling Rate
-GETSEC = 1.0 # Get this many samples at a time
-FRAMEINTERVALMS = 100 # milliseconds between draw events... 10 hz
+def getTimebase(dev):
+  timebase_id = dev._tio.protocol.streamInfo['stream_timebase_id']
+  print(f"Stream 0: timebase ID: {timebase_id}"
+       +f", components: {dev._tio.protocol.streamInfo['stream_total_components']}"
+       +f", period: {dev._tio.protocol.streamInfo['stream_period']} uS")
+  print(f"Timebase {timebase_id} rate: {dev._tio.protocol.timebases[timebase_id]['timebase_Fs']:.3f} Hz"
+       +f" ({dev._tio.protocol.timebases[timebase_id]['timebase_period_num_us']}/{dev._tio.protocol.timebases[timebase_id]['timebase_period_denom_us']} µs)"
+       +f", epoch: {dev._tio.protocol.timebases[timebase_id]['timebase_epoch']}"
+       +f", stability: {dev._tio.protocol.timebases[timebase_id]['timebase_stability_ppb']:.0f} ppb")
+  for i, column in enumerate(dev._tio.protocol.streams):
+    print(f"Component {i}: {column['source_name']} ({column['source_title']}), period {column['source_period']}, {column['stream_Fs']:.3f} Hz")
+  return dev._tio.protocol.timebases[timebase_id]['timebase_Fs']
 
 class RealtimePlot:
-  def __init__(self, 
-      dev,
-      windowLength = WINDOWSEC, # seconds 
-      tickTime = GETSEC, # seconds of data to get from the sensor
-      xlabel="Time (s)", 
-      ylabel="Field (nT)"):
+  def __init__(self, dev, windowLength, tickTime, xlabel="Time (s)", ylabel="Field (nT)"):
     
     self.dev = dev
-
-    queueLength = int(windowLength*dev._tio.protocol.streams[0]['stream_Fs'])
-    print(f'Setup: VMR sampling at {SR}, Window {WINDOWSEC}, GetSec {GETSEC}, frame every {FRAMEINTERVALMS} ms, Queue {queueLength}')
+    self.windowLength = windowLength
+    self.tickTime = tickTime
+    queueLength = int(windowLength)
+    
+    print(f'Setup: VMR sampling at {SR}, Window {WINDOWSEC}, GetSec {GETSEC}, frame every {FRAMEINTERVALMS} ms, Queue {queueLength} points')
 
     # Initialize data arrays as Double Ended Queue (d e que), which
     # auto-discards objects when max length is reached
@@ -35,16 +41,15 @@ class RealtimePlot:
     self.data_y = collections.deque(maxlen=queueLength)
     self.data_z = collections.deque(maxlen=queueLength)
 
-    self.tickTime = tickTime # Make this available inside animate()
-
     matplotlib.rcParams['font.family'] = 'Palatino'
     self.fig = matplotlib.pyplot.figure(constrained_layout=True)
     gs = matplotlib.gridspec.GridSpec(3,1, figure=self.fig, hspace= 0.08, wspace=0.1)
-    self.ax1 = self.fig.add_subplot(gs[2])
-    self.ax2 = self.fig.add_subplot(gs[1], sharex=self.ax1)
-    self.ax3 = self.fig.add_subplot(gs[0], sharex=self.ax2) 
+    self.ax3 = self.fig.add_subplot(gs[2]) 
+    self.ax1 = self.fig.add_subplot(gs[0], sharex=self.ax3)
+    self.ax2 = self.fig.add_subplot(gs[1], sharex=self.ax3)
+    matplotlib.pyplot.setp(self.ax1.get_xticklabels(), visible=False)
     matplotlib.pyplot.setp(self.ax2.get_xticklabels(), visible=False)
-    matplotlib.pyplot.setp(self.ax3.get_xticklabels(), visible=False)
+    self.ax3.xaxis.set_major_formatter(mtick.FormatStrFormatter('%5.1f')) 
  
     self.ax1line = matplotlib.lines.Line2D([],[], color='black', linewidth = 0.5)
     self.ax2line = matplotlib.lines.Line2D([],[], color='black', linewidth = 0.5)
@@ -69,6 +74,11 @@ class RealtimePlot:
     # Get new data from the sensor
     data = self.dev.vector(duration=self.tickTime, timeaxis=True, flush=False)
 
+    if len(self.data_t)==self.data_t.maxlen:
+      print('Full')
+    else:
+      print(len(self.data_t))
+
     self.data_t.extend(data[0]) # Add new data to the queue
     # print(self.data_t)
     self.data_x.extend(data[1])
@@ -91,19 +101,33 @@ class RealtimePlot:
     self.ax3.autoscale_view()
     return self.ax1line, self.ax2line, self.ax3line,
 
-def main():
-  parser = argparse.ArgumentParser(prog='vectorMonitor', 
-                             description='Vector Field Graphing Monitor')
-  parser.add_argument("url", 
-                nargs='?', 
-                default='tcp://localhost',
-                help='URL: tcp://localhost')
-  args = parser.parse_args()
+parser = argparse.ArgumentParser(prog='vectorMonitor', 
+                            description='Vector Field Graphing Monitor')
+parser.add_argument("url", 
+              nargs='?', 
+              default='tcp://localhost',
+              help='URL: tcp://localhost')
+args = parser.parse_args()
 
-  dev = tldevice.Device(args.url)
-  assert(dev.dev.name()=='VMR')
-  dev.data.rate = SR
-  
-  RealtimePlot(dev)
+dev = tldevice.Device(args.url)
+assert(dev.dev.name()=='VMR')
 
-if __name__ == "__main__": main()
+timebase = getTimebase(dev)
+
+# At 400 things are not quite right... window is ~20 seconds long?  200 Seems OK
+SR = 200 #VMR Sampling rate
+WINDOWSEC = 10 # Seconds of data in plot window
+GETSEC = 1.0 # Get this many seconds of data at a time
+FRAMEINTERVALMS = 1.0/GETSEC # milliseconds between draw events
+
+decimation = int(timebase/SR)
+print(f'Setting sampling rate ({timebase}/{SR} = {decimation})')
+dev.vector.data.decimation(decimation)
+print(f'Sampling rate set to {dev.data.rate()}')
+
+# Check sampling rate
+# data = dev.vector(duration=1,flush=False)
+# N = len(data)   
+# print(f'Observed data rate is {N} Hz')
+
+RealtimePlot(dev,WINDOWSEC*SR,GETSEC)
