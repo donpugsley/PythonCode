@@ -1,10 +1,11 @@
-from pylive import live_plotter
+from pylive import live_plotter,live_plotter_xy
 import numpy as np
 import tldevicesync
 
 tio = tldevicesync.DeviceSync()
 
 streams = []
+# streams += [tio.vmr.vector] # Single VMR
 streams += [tio.vmr0.vector]
 streams += [tio.vmr1.vector]
 streams += [tio.vmr2.vector]
@@ -35,6 +36,6 @@ for d in ss.iter():
 
     x_vec[-1] = newtime # Add new point to the end
     y_vec[-1] = newvalue 
-    line1 = live_plotter(x_vec,y_vec,line1) # Draw
+    line1 = live_plotter_xy(x_vec,y_vec,line1) # Draw
     x_vec = np.append(x_vec[1:],0.0) # Drop the first point
     y_vec = np.append(y_vec[1:],0.0)
