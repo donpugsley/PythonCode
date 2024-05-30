@@ -4,7 +4,7 @@ import numpy as np
 # use ggplot style for more sophisticated visuals
 plt.style.use('ggplot')
 
-def live_plotter(x_vec,y1_data,line1,identifier='',pause_time=0.1):
+def live_plotter(x_vec,y1_data,line1,identifier='',pause_time=0.001):
     if line1==[]:
         # this is the call to matplotlib that allows dynamic plotting
         plt.ion()
@@ -29,12 +29,12 @@ def live_plotter(x_vec,y1_data,line1,identifier='',pause_time=0.1):
     return line1
 
 # the function below is for updating both x and y values (great for updating dates on the x-axis)
-def live_plotter_xy(x_vec,y1_data,line1,identifier='',pause_time=0.01):
+def live_plotter_xy(x_vec,y1_data,line1,identifier='',pause_time=0.001):
     if line1==[]:
         plt.ion()
         fig = plt.figure(figsize=(13,6))
         ax = fig.add_subplot(111)
-        line1, = ax.plot(x_vec,y1_data,'r-o',alpha=0.8)
+        line1, = ax.plot(x_vec,y1_data) # ,'r-o',alpha=0.8)
         plt.ylabel('Y Label')
         plt.title('Title: {}'.format(identifier))
         plt.show()

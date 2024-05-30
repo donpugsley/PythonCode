@@ -76,6 +76,8 @@ class RealtimePlot:
 
     if len(self.data_t)==self.data_t.maxlen:
       print('Full')
+    elif len(self.data_t)>self.data_t.maxlen:
+      print('OVER')
     else:
       print(len(self.data_t))
 
@@ -105,29 +107,26 @@ parser = argparse.ArgumentParser(prog='vectorMonitor',
                             description='Vector Field Graphing Monitor')
 parser.add_argument("url", 
               nargs='?', 
-              default='tcp://localhost',
+              default='tcp://localhost/0',
               help='URL: tcp://localhost')
 args = parser.parse_args()
 
-dev = tldevice.Device(args.url)
-assert(dev.dev.name()=='VMR')
+def vmrdevice(url,sr):
+  dev = tldevice.Device(url)
+  assert(dev.dev.name()=='VMR')
+  timebasehz = getTimebase(dev)
+  decimation = int(timebasehz/sr)
+  print(f'Setting sampling rate (decimation = {timebasehz}/{sr} = {decimation})')
+  dev.vector.data.decimation(decimation)
+  print(f'Sampling rate set to {dev.data.rate()}')
+  return dev
 
-timebase = getTimebase(dev)
-
-# At 400 things are not quite right... window is ~20 seconds long?  200 Seems OK
-SR = 200 #VMR Sampling rate
+# At 400 this doesn't keep up... window is ~20 seconds long?  200 Seems OK
+SR = 100 # VMR Sampling rate
 WINDOWSEC = 10 # Seconds of data in plot window
 GETSEC = 1.0 # Get this many seconds of data at a time
 FRAMEINTERVALMS = 1.0/GETSEC # milliseconds between draw events
 
-decimation = int(timebase/SR)
-print(f'Setting sampling rate ({timebase}/{SR} = {decimation})')
-dev.vector.data.decimation(decimation)
-print(f'Sampling rate set to {dev.data.rate()}')
-
-# Check sampling rate
-# data = dev.vector(duration=1,flush=False)
-# N = len(data)   
-# print(f'Observed data rate is {N} Hz')
+dev = vmrdevice(args.url,SR)
 
 RealtimePlot(dev,WINDOWSEC*SR,GETSEC)
