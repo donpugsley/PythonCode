@@ -20,6 +20,8 @@ reader = ReadLine(ser) # Initialize an efficient line reader
 app = pg.mkQApp("Serial Data Plot") # Quicktime app
 w = pg.GraphicsLayoutWidget(show=True) # Main window
 plt = w.addPlot() # Empty plot taking up the whole window
+plt.showGrid(True,True)
+plt.setLogMode(True,False)
 cx = plt.plot(pen="r") # Empty curves on the plot; set the curve data later
 cy = plt.plot(pen="g") 
 cz = plt.plot(pen="b") 
@@ -69,15 +71,12 @@ def update():
     # Spectrum
     fx, Px = signal.periodogram(Dx-np.mean(Dx), 200)
     cx.setData(fx,Px)
-    # cx.setLogMode(True,False) # X log, Y not log
-    
+   
     fy, Py = signal.periodogram(Dy-np.mean(Dy), 200)
     cy.setData(fy,Py)
-    # cy.setlogMode(True,False)
     
     fz, Pz = signal.periodogram(Dz-np.mean(Dz), 200)
     cz.setData(fz,Pz)
-    # cz.setlogMode(True,False)
        
 
 # Set an update and process Qt events until the window is closed.
