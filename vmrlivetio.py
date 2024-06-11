@@ -1,5 +1,5 @@
 # Read and plot live data from one VMR using the tio tcp proxy interface
-# and pyqtgraph
+# and pyqtgraph, with a Qt Designer GUI
 
 # How fast will this go?
 SR = 200 # VMR Sampling rate
@@ -7,10 +7,11 @@ WINDOWSEC = 20 # Seconds of data in plot window
 BUFFERSIZE = SR*WINDOWSEC
 DATASIZE = 25 # Points of data to get at a time
 
+import sys
 import argparse
 import numpy as np
+from PyQt6.QtWidgets import QApplication
 import pyqtgraph as pg
-from pyqtgraph.Qt import QtCore
 from scipy import signal
 import tldevice
 
@@ -26,16 +27,22 @@ def vmrdevice(url,sr):
   dev.vector.data.decimation(decimation)
   return dev
 
-
 parser = argparse.ArgumentParser(prog='vectorMonitor', description='Vector Field Graphing Monitor')
 parser.add_argument("url", nargs='?', default='tcp://localhost', help='URL: tcp://localhost')
 args = parser.parse_args()
 dev = vmrdevice(args.url,SR)
 
-app = pg.mkQApp("VMR Plot") # Quicktime app
-w = pg.GraphicsLayoutWidget(show=True) # Main window
-windowWidth = 1000 # width of the main window in pixels
-w.resize(windowWidth,round(0.6*windowWidth)) 
+# Load the QT Designer .ui file 
+uiclass, baseclass = pg.Qt.loadUiType("VMR.ui")
+class MainWindow(uiclass, baseclass):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
+# Create the main window and set up the UI
+app = QApplication(sys.argv)
+window = MainWindow() 
+w = window.mywidget # This is the promoted GraphicsLayoutWidget 
 plt = w.addPlot() # Empty plot taking up the whole window
 plt.showGrid(True,True)
 # plt.setLogMode(True,False)
@@ -87,7 +94,8 @@ def update():
        
 
 # Set an update and process Qt events until the window is closed.
-timer = QtCore.QTimer() # Create a timer
+timer = pg.QtCore.QTimer() # Create a timer
 timer.timeout.connect(update) # Call the update routine when the timer ticks
 timer.start(round(SR/DATASIZE)) # Timer event set for 50 times a second
-pg.exec() # Fall into event loop... exits when main window is closed
+window.show()
+app.exec() # Fall into event loop... exits when main window is closed
