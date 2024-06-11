@@ -43,55 +43,76 @@ class MainWindow(uiclass, baseclass):
 app = QApplication(sys.argv)
 window = MainWindow() 
 w = window.mywidget # This is the promoted GraphicsLayoutWidget 
-plt = w.addPlot() # Empty plot taking up the whole window
-plt.showGrid(True,True)
-# plt.setLogMode(True,False)
+tplot = w.addPlot(row=0,col=0) 
+tplot.showGrid(True,True)
 
-cx = plt.plot(pen="r") # Add empty curves to the plot; set the curve data later
-cy = plt.plot(pen="g") 
-cz = plt.plot(pen="b") 
+cx = tplot.plot(pen="r") # Add empty curves to the plot; set the curve data later
+cy = tplot.plot(pen="g") 
+cz = tplot.plot(pen="b") 
+ctf = tplot.plot(pen="y")
+
+splot = w.addPlot(row=1,col=0) 
+splot.showGrid(True,True)
+splot.setLogMode(True,False)
+sx = splot.plot(pen="r") # Add empty curves to the plot; set the curve data later
+sy = splot.plot(pen="g") 
+sz = splot.plot(pen="b") 
+stf = splot.plot(pen="y")
+
+# TODO - FTMG version
+# p = [w.addPlot(row=0, col=0), w.addPlot(row=0, col=1), w.addPlot(row=0, col=2),
+#      w.addPlot(row=1, col=0), w.addPlot(row=1, col=1), w.addPlot(row=1, col=2),
+#      w.addPlot(row=2, col=0), w.addPlot(row=2, col=1), w.addPlot(row=2, col=2)]
+# c = [p[i].plot() for i in range(len(p))]
 
 Dx = np.linspace(0,0,BUFFERSIZE) # Create the data array that will be plotted
 Dy = np.linspace(0,0,BUFFERSIZE)
 Dz = np.linspace(0,0,BUFFERSIZE)
+Dtf = np.linspace(0,0,BUFFERSIZE)
 
 # Get some VMR data points
 def getVMRdata(dev,DATASIZE): 
     # Get new data from the sensor
     d = dev.data(DATASIZE+1)
-    return d # np.transpose(d) - this was a tio version change?  Working as of 6/11/2024
+    return np.array(d) # np.transpose(d) - this was a tio version change?  Working as of 6/11/2024
 
 # Callback function - read data and update the plot when called
 def update():
-    global dev,cx,cy,cz, Dx,Dy,Dz, BUFFERSIZE, DATASIZE # provide subfunction access to these
+    global dev,cx,cy,cz, sx,sy,sz,stf, Dx,Dy,Dz,Dtf, BUFFERSIZE, DATASIZE # provide subfunction access to these
 
 # Get some VMR data 
     mx,my,mz,ax,ay,az,gx,gy,gz,bar,temp = getVMRdata(dev,DATASIZE)
 
+    tf = np.sqrt(mx*mx+my*my+mz*mz)
     Dx = np.append(Dx, mx)              
     Dy = np.append(Dy, my)              
     Dz = np.append(Dz, mz)  
+    Dtf = np.append(Dtf, tf)
     
     if len(Dx) > BUFFERSIZE: # If we have filled the data buffer, keep only the end
         Dx = Dx[-BUFFERSIZE:]
         Dy = Dy[-BUFFERSIZE:]
         Dz = Dz[-BUFFERSIZE:]
+        Dtf = Dtf[-BUFFERSIZE:]
 
     # Time series plot
     cx.setData(Dx-np.mean(Dx)) # Update the plot by setting the curve data
     cy.setData(Dy-np.mean(Dy))             
     cz.setData(Dz-np.mean(Dz))    
+    ctf.setData(Dtf-np.mean(Dtf))    
 
     # Spectrum
-    # fx, Px = signal.periodogram(Dx-np.mean(Dx), SR)
-    # cx.setData(fx,Px)
+    fx, Px = signal.periodogram(Dx-np.mean(Dx), SR)
+    sx.setData(fx,Px)
    
-    # fy, Py = signal.periodogram(Dy-np.mean(Dy), SR)
-    # cy.setData(fy,Py)
+    fy, Py = signal.periodogram(Dy-np.mean(Dy), SR)
+    sy.setData(fy,Py)
     
-    # fz, Pz = signal.periodogram(Dz-np.mean(Dz), SR)
-    # cz.setData(fz,Pz)
+    fz, Pz = signal.periodogram(Dz-np.mean(Dz), SR)
+    sz.setData(fz,Pz)
        
+    ftf, Ptf = signal.periodogram(Dtf-np.mean(Dtf), SR)
+    stf.setData(ftf,Ptf)
 
 # Set an update and process Qt events until the window is closed.
 timer = pg.QtCore.QTimer() # Create a timer
