@@ -3,9 +3,9 @@
 
 # How fast will this go?
 SR = 200 # VMR Sampling rate
-WINDOWSEC = 5 # Seconds of data in plot window
+WINDOWSEC = 20 # Seconds of data in plot window
 BUFFERSIZE = SR*WINDOWSEC
-DATASIZE = 5 # Points of data to get at a time
+DATASIZE = 25 # Points of data to get at a time
 
 import argparse
 import numpy as np
@@ -48,11 +48,11 @@ Dx = np.linspace(0,0,BUFFERSIZE) # Create the data array that will be plotted
 Dy = np.linspace(0,0,BUFFERSIZE)
 Dz = np.linspace(0,0,BUFFERSIZE)
 
-# Get one VMR sample
+# Get some VMR data points
 def getVMRdata(dev,DATASIZE): 
     # Get new data from the sensor
     d = dev.data(DATASIZE+1)
-    return np.transpose(d)
+    return d # np.transpose(d) - this was a tio version change?  Working as of 6/11/2024
 
 # Callback function - read data and update the plot when called
 def update():
