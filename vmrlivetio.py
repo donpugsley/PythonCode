@@ -3,7 +3,7 @@
 
 # How fast will this go?
 SR = 200 # VMR Sampling rate
-WINDOWSEC = 20 # Seconds of data in plot window
+WINDOWSEC = 5 # Seconds of data in plot window
 BUFFERSIZE = SR*WINDOWSEC
 DATASIZE = 25 # Points of data to get at a time
 
@@ -32,17 +32,48 @@ parser.add_argument("url", nargs='?', default='tcp://localhost', help='URL: tcp:
 args = parser.parse_args()
 dev = vmrdevice(args.url,SR)
 
+# GUI control variables
+removeMean, showTF, clearPlotFlag = [False]*3
+showX, showY, showZ = [True]*3
+
 # Load the QT Designer .ui file 
 uiclass, baseclass = pg.Qt.loadUiType("VMR.ui")
 class MainWindow(uiclass, baseclass):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.checkBoxDC.stateChanged.connect(self.DC_state_changed)
+        self.checkBoxTF.stateChanged.connect(self.TF_state_changed)
+        self.checkBoxX.stateChanged.connect(self.X_state_changed)
+        self.checkBoxY.stateChanged.connect(self.Y_state_changed)
+        self.checkBoxZ.stateChanged.connect(self.Z_state_changed)
 
-# Create the main window and set up the UI
+    def DC_state_changed(self, int):
+        global removeMean
+        removeMean = not self.checkBoxDC.isChecked()
+    def TF_state_changed(self, int):
+        global showTF, clearPlotFlag
+        showTF = self.checkBoxTF.isChecked()
+        clearPlotFlag = True
+    def X_state_changed(self, int):
+        global showX, clearPlotFlag
+        showX = self.checkBoxX.isChecked()
+        clearPlotFlag = True
+    def Y_state_changed(self, int):
+        global showY, clearPlotFlag
+        showY = self.checkBoxY.isChecked()
+        clearPlotFlag = True
+    def Z_state_changed(self, int):
+        global showZ, clearPlotFlag
+        showZ = self.checkBoxZ.isChecked()
+        clearPlotFlag = True
+
+ # Create the main window and set up the UI
 app = QApplication(sys.argv)
 window = MainWindow() 
 w = window.mywidget # This is the promoted GraphicsLayoutWidget 
+
+
 tplot = w.addPlot(row=0,col=0) 
 tplot.showGrid(True,True)
 
@@ -78,12 +109,11 @@ def getVMRdata(dev,DATASIZE):
 
 # Callback function - read data and update the plot when called
 def update():
-    global dev,cx,cy,cz, sx,sy,sz,stf, Dx,Dy,Dz,Dtf, BUFFERSIZE, DATASIZE # provide subfunction access to these
+    global dev,cx,cy,cz, sx,sy,sz,stf, Dx,Dy,Dz,Dtf, BUFFERSIZE, DATASIZE, tplot,splot,clearPlotFlag,cx,cy,cz,ctf,sx,sy,sz,stf
 
-# Get some VMR data 
     mx,my,mz,ax,ay,az,gx,gy,gz,bar,temp = getVMRdata(dev,DATASIZE)
 
-    tf = np.sqrt(mx*mx+my*my+mz*mz)
+    tf = np.sqrt(mx*mx+my*my+mz*mz) # "*" does point by point multiplication here
     Dx = np.append(Dx, mx)              
     Dy = np.append(Dy, my)              
     Dz = np.append(Dz, mz)  
@@ -95,24 +125,56 @@ def update():
         Dz = Dz[-BUFFERSIZE:]
         Dtf = Dtf[-BUFFERSIZE:]
 
+
+    if clearPlotFlag:
+        tplot.clear()
+        splot.clear()        
+        cx = tplot.plot(pen="r") # Add empty curves to the plot; set the curve data later
+        cy = tplot.plot(pen="g") 
+        cz = tplot.plot(pen="b") 
+        ctf = tplot.plot(pen="y")
+        sx = splot.plot(pen="r") # Add empty curves to the plot; set the curve data later
+        sy = splot.plot(pen="g") 
+        sz = splot.plot(pen="b") 
+        stf = splot.plot(pen="y")
+        clearPlotFlag = False
+
     # Time series plot
-    cx.setData(Dx-np.mean(Dx)) # Update the plot by setting the curve data
-    cy.setData(Dy-np.mean(Dy))             
-    cz.setData(Dz-np.mean(Dz))    
-    ctf.setData(Dtf-np.mean(Dtf))    
+    if removeMean:
+        if showX:
+            cx.setData(Dx-np.mean(Dx))
+        if showY:
+            cy.setData(Dy-np.mean(Dy))             
+        if showZ:
+            cz.setData(Dz-np.mean(Dz))    
+        if showTF:
+            ctf.setData(Dtf-np.mean(Dtf))    
+    else:
+        if showX:
+            cx.setData(Dx) 
+        if showY:
+            cy.setData(Dy)             
+        if showZ:
+            cz.setData(Dz)    
+        if showTF:
+            ctf.setData(Dtf)    
+    
 
     # Spectrum
-    fx, Px = signal.periodogram(Dx-np.mean(Dx), SR)
-    sx.setData(fx,Px)
-   
-    fy, Py = signal.periodogram(Dy-np.mean(Dy), SR)
-    sy.setData(fy,Py)
-    
-    fz, Pz = signal.periodogram(Dz-np.mean(Dz), SR)
-    sz.setData(fz,Pz)
-       
-    ftf, Ptf = signal.periodogram(Dtf-np.mean(Dtf), SR)
-    stf.setData(ftf,Ptf)
+    if showX:
+        fx, Px = signal.periodogram(Dx,SR,detrend='constant',scaling='density')
+        sx.setData(fx,np.sqrt(Px))
+    if showY:
+        fy, Py = signal.periodogram(Dy,SR,detrend='constant',scaling='density')
+        sy.setData(fy,np.sqrt(Py))
+    if showZ:    
+        fz, Pz = signal.periodogram(Dz,SR,detrend='constant',scaling='density')
+        sz.setData(fz,np.sqrt(Pz))
+    if showTF:       
+        # ftf, Ptf = signal.periodogram(Dtf,SR,detrend='constant',scaling='density')
+        ftf, Ptf = signal.welch(Dtf,SR,nperseg=np.floor(BUFFERSIZE/6),detrend='constant',scaling='density')
+        stf.setData(ftf,np.sqrt(Ptf))
+
 
 # Set an update and process Qt events until the window is closed.
 timer = pg.QtCore.QTimer() # Create a timer
