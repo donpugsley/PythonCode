@@ -1,11 +1,13 @@
 # Read and plot live data from one VMR using the tio tcp proxy interface
 # and pyqtgraph, with a Qt Designer GUI
 
-# How fast will this go?
+# How fast will this go?  200 Hzseems to work OK
+# TODO - try streaming, the simple scheme loses some data points
+
 SR = 200 # VMR Sampling rate
 WINDOWSEC = 5 # Seconds of data in plot window
-BUFFERSIZE = SR*WINDOWSEC
-DATASIZE = 25 # Points of data to get at a time
+BUFFERSIZE = int(SR*WINDOWSEC)
+DATASIZE = 10 # Points of data to get at a time
 
 import sys
 import argparse
