@@ -8,20 +8,22 @@ SR = 200 # VMR Sampling rate
 WINDOWSEC = 5 # Seconds of data in plot window
 BUFFERSIZE = int(SR*WINDOWSEC)
 DATASIZE = 10 # Points of data to get at a time
+WELCHFACTOR = 6 # Number of segments for Welch PSD
 
 import sys
 import argparse
 import numpy as np
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication, QDialog, QVBoxLayout, QLabel
+from PyQt6.QtGui import QFont
 import pyqtgraph as pg
 from scipy import signal
 import tldevice
 
-def getTimebase(dev):
+def getTimebase(dev): # Get VMR timebase clock rate
   timebase_id = dev._tio.protocol.streamInfo['stream_timebase_id']
   return dev._tio.protocol.timebases[timebase_id]['timebase_Fs']
 
-def vmrdevice(url,sr):
+def vmrdevice(url,sr): # Open VMR port and set requested sampling rate
   dev = tldevice.Device(url)
   assert(dev.dev.name()=='VMR')
   timebasehz = getTimebase(dev)
@@ -49,7 +51,7 @@ class MainWindow(uiclass, baseclass):
         self.checkBoxX.stateChanged.connect(self.X_state_changed)
         self.checkBoxY.stateChanged.connect(self.Y_state_changed)
         self.checkBoxZ.stateChanged.connect(self.Z_state_changed)
-
+     
     def DC_state_changed(self, int):
         global removeMean
         removeMean = not self.checkBoxDC.isChecked()
@@ -73,8 +75,22 @@ class MainWindow(uiclass, baseclass):
  # Create the main window and set up the UI
 app = QApplication(sys.argv)
 window = MainWindow() 
-w = window.mywidget # This is the promoted GraphicsLayoutWidget 
+w = window.mywidget # This is the promoted GraphicsLayoutWidget used for fast plottting
 
+# Create a modeless dialog box for text data display
+dialog = QDialog(None)
+dialog.setWindowTitle("Twinleaf VMR Data (latest, mean, peak to peak)")
+XValue = QLabel()
+YValue = QLabel()
+ZValue = QLabel()
+layout = QVBoxLayout(dialog)
+layout.addWidget(XValue)
+XValue.setFont(QFont('Arial', 26))
+layout.addWidget(YValue)
+YValue.setFont(QFont('Arial', 26))
+layout.addWidget(ZValue)
+ZValue.setFont(QFont('Arial', 26))
+dialog.setLayout(layout)
 
 tplot = w.addPlot(row=0,col=0) 
 tplot.showGrid(True,True)
@@ -111,7 +127,7 @@ def getVMRdata(dev,DATASIZE):
 
 # Callback function - read data and update the plot when called
 def update():
-    global dev,cx,cy,cz, sx,sy,sz,stf, Dx,Dy,Dz,Dtf, BUFFERSIZE, DATASIZE, tplot,splot,clearPlotFlag,cx,cy,cz,ctf,sx,sy,sz,stf
+    global dev,cx,cy,cz, sx,sy,sz,stf, Dx,Dy,Dz,Dtf, BUFFERSIZE, DATASIZE, tplot,splot,clearPlotFlag,cx,cy,cz,ctf,sx,sy,sz,stf, XValue,YValue,ZValue,dialog
 
     mx,my,mz,ax,ay,az,gx,gy,gz,bar,temp = getVMRdata(dev,DATASIZE)
 
@@ -164,18 +180,26 @@ def update():
 
     # Spectrum
     if showX:
-        fx, Px = signal.periodogram(Dx,SR,detrend='constant',scaling='density')
+        # fx, Px = signal.periodogram(Dx,SR,detrend='constant',scaling='density')
+        fx, Px = signal.welch(Dx,SR,nperseg=np.floor(BUFFERSIZE/WELCHFACTOR),detrend='constant',scaling='density')
         sx.setData(fx,np.sqrt(Px))
     if showY:
-        fy, Py = signal.periodogram(Dy,SR,detrend='constant',scaling='density')
+        # fy, Py = signal.periodogram(Dy,SR,detrend='constant',scaling='density')
+        fy, Py = signal.welch(Dy,SR,nperseg=np.floor(BUFFERSIZE/WELCHFACTOR),detrend='constant',scaling='density')
         sy.setData(fy,np.sqrt(Py))
     if showZ:    
-        fz, Pz = signal.periodogram(Dz,SR,detrend='constant',scaling='density')
+        # fz, Pz = signal.periodogram(Dz,SR,detrend='constant',scaling='density')
+        fz, Pz = signal.welch(Dz,SR,nperseg=np.floor(BUFFERSIZE/WELCHFACTOR),detrend='constant',scaling='density')
         sz.setData(fz,np.sqrt(Pz))
     if showTF:       
         # ftf, Ptf = signal.periodogram(Dtf,SR,detrend='constant',scaling='density')
-        ftf, Ptf = signal.welch(Dtf,SR,nperseg=np.floor(BUFFERSIZE/6),detrend='constant',scaling='density')
+        ftf, Ptf = signal.welch(Dtf,SR,nperseg=np.floor(BUFFERSIZE/WELCHFACTOR),detrend='constant',scaling='density')
         stf.setData(ftf,np.sqrt(Ptf))
+
+    XValue.setText(f'X: {Dx[-1]:.0f} nT\t {np.mean(Dx):.0f} nT mean\t {np.ptp(Dx):.0f} nT pkpk')
+    YValue.setText(f'Y: {Dy[-1]:.0f} nT\t {np.mean(Dy):.0f} nT mean\t {np.ptp(Dy):.0f} nT pkpk')
+    ZValue.setText(f'Z: {Dz[-1]:.0f} nT\t {np.mean(Dz):.0f} nT mean\t {np.ptp(Dz):.0f} nT pkpk')
+    dialog.show()
 
 
 # Set an update and process Qt events until the window is closed.
@@ -184,3 +208,4 @@ timer.timeout.connect(update) # Call the update routine when the timer ticks
 timer.start(round(SR/DATASIZE)) # Timer event set for 50 times a second
 window.show()
 app.exec() # Fall into event loop... exits when main window is closed
+dialog.close()

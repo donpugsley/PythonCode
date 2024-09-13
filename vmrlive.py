@@ -12,7 +12,7 @@ from ReadLine import *
 from scipy import signal
 
 # This is the serial port created when the VMR is plugged in - may need chmod 666 before use
-portName = "/dev/ttyACM0"                      
+portName = "/dev/ttyUSB0"                      
 baudrate = 230400
 ser = serial.Serial(portName,baudrate)
 reader = ReadLine(ser) # Initialize an efficient line reader
