@@ -83,6 +83,7 @@ dialog.setWindowTitle("Twinleaf VMR Data (latest, mean, peak to peak)")
 XValue = QLabel()
 YValue = QLabel()
 ZValue = QLabel()
+TFValue = QLabel()
 layout = QVBoxLayout(dialog)
 layout.addWidget(XValue)
 XValue.setFont(QFont('Arial', 26))
@@ -90,6 +91,8 @@ layout.addWidget(YValue)
 YValue.setFont(QFont('Arial', 26))
 layout.addWidget(ZValue)
 ZValue.setFont(QFont('Arial', 26))
+layout.addWidget(TFValue)
+TFValue.setFont(QFont('Arial', 26))
 dialog.setLayout(layout)
 
 tplot = w.addPlot(row=0,col=0) 
@@ -122,7 +125,7 @@ Dtf = np.linspace(0,0,BUFFERSIZE)
 # Get some VMR data points
 def getVMRdata(dev,DATASIZE): 
     # Get new data from the sensor
-    d = dev.data(DATASIZE+1)
+    d = dev.data(DATASIZE+1,timeaxis=False, flush=False)
     return np.array(d) # np.transpose(d) - this was a tio version change?  Working as of 6/11/2024
 
 # Callback function - read data and update the plot when called
@@ -199,6 +202,7 @@ def update():
     XValue.setText(f'X: {Dx[-1]:.0f} nT\t {np.mean(Dx):.0f} nT mean\t {np.ptp(Dx):.0f} nT pkpk')
     YValue.setText(f'Y: {Dy[-1]:.0f} nT\t {np.mean(Dy):.0f} nT mean\t {np.ptp(Dy):.0f} nT pkpk')
     ZValue.setText(f'Z: {Dz[-1]:.0f} nT\t {np.mean(Dz):.0f} nT mean\t {np.ptp(Dz):.0f} nT pkpk')
+    TFValue.setText(f'TF: {Dtf[-1]:.0f} nT\t {np.mean(Dtf):.0f} nT mean\t {np.ptp(Dtf):.0f} nT pkpk')
     dialog.show()
 
 
