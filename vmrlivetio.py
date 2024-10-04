@@ -1,14 +1,20 @@
 # Read and plot live data from one VMR using the tio tcp proxy interface
 # and pyqtgraph, with a Qt Designer GUI
 
-# How fast will this go?  200 Hzseems to work OK
-# TODO - try streaming, the simple scheme loses some data points
+# 200 Hz is great as long as we don't use the LPF.  need faster LPF!
 
 SR = 200 # VMR Sampling rate
 WINDOWSEC = 5 # Seconds of data in plot window
 BUFFERSIZE = int(SR*WINDOWSEC)
 DATASIZE = 10 # Points of data to get at a time
 WELCHFACTOR = 6 # Number of segments for Welch PSD
+
+# Lowpass filter setup
+lpforder = 6
+lpfcutoff = 20
+
+# SMA (Simple Moving Average) filter window
+smawindow = 10
 
 import sys
 import argparse
@@ -18,6 +24,14 @@ from PyQt6.QtGui import QFont
 import pyqtgraph as pg
 from scipy import signal
 import tldevice
+from scipy.signal import butter, filtfilt
+
+# Create lowpass digital filter coefficients
+lpfb, lpfa = butter(lpforder, lpfcutoff, fs=SR, btype='low', analog=False)
+
+# Fast alternative filter?
+def sma_filter(data, window_size=smawindow):
+    return np.convolve(data, np.ones(window_size) / window_size, mode='valid')
 
 def getTimebase(dev): # Get VMR timebase clock rate
   timebase_id = dev._tio.protocol.streamInfo['stream_timebase_id']
@@ -27,7 +41,7 @@ def vmrdevice(url,sr): # Open VMR port and set requested sampling rate
   dev = tldevice.Device(url)
   assert(dev.dev.name()=='VMR')
   timebasehz = getTimebase(dev)
-  decimation = int(timebasehz/sr)
+  decimation = int(timebasehz/sr) # Set as a U32 integer decimation factor
   dev.vector.data.decimation(decimation)
   return dev
 
@@ -37,7 +51,7 @@ args = parser.parse_args()
 dev = vmrdevice(args.url,SR)
 
 # GUI control variables
-removeMean, showTF, clearPlotFlag = [False]*3
+removeMean, showTF, clearPlotFlag, useLPF = [False]*4
 showX, showY, showZ = [True]*3
 
 # Load the QT Designer .ui file 
@@ -51,7 +65,11 @@ class MainWindow(uiclass, baseclass):
         self.checkBoxX.stateChanged.connect(self.X_state_changed)
         self.checkBoxY.stateChanged.connect(self.Y_state_changed)
         self.checkBoxZ.stateChanged.connect(self.Z_state_changed)
+        self.checkBoxLPF.stateChanged.connect(self.LPF_state_changed)
      
+    def LPF_state_changed(self, int):
+        global useLPF
+        useLPF = self.checkBoxLPF.isChecked()
     def DC_state_changed(self, int):
         global removeMean
         removeMean = not self.checkBoxDC.isChecked()
@@ -105,7 +123,7 @@ ctf = tplot.plot(pen="y")
 
 splot = w.addPlot(row=1,col=0) 
 splot.showGrid(True,True)
-splot.setLogMode(True,False)
+splot.setLogMode(True,True)
 sx = splot.plot(pen="r") # Add empty curves to the plot; set the curve data later
 sy = splot.plot(pen="g") 
 sz = splot.plot(pen="b") 
@@ -122,15 +140,15 @@ Dy = np.linspace(0,0,BUFFERSIZE)
 Dz = np.linspace(0,0,BUFFERSIZE)
 Dtf = np.linspace(0,0,BUFFERSIZE)
 
-# Get some VMR data points
+# Get some VMR data points TODO: get all available points
 def getVMRdata(dev,DATASIZE): 
     # Get new data from the sensor
-    d = dev.data(DATASIZE+1,timeaxis=False, flush=False)
+    d = dev.data(DATASIZE,timeaxis=False, flush=False)
     return np.array(d) # np.transpose(d) - this was a tio version change?  Working as of 6/11/2024
 
 # Callback function - read data and update the plot when called
 def update():
-    global dev,cx,cy,cz, sx,sy,sz,stf, Dx,Dy,Dz,Dtf, BUFFERSIZE, DATASIZE, tplot,splot,clearPlotFlag,cx,cy,cz,ctf,sx,sy,sz,stf, XValue,YValue,ZValue,dialog
+    global dev,cx,cy,cz, sx,sy,sz,stf, Dx,Dy,Dz,Dtf, BUFFERSIZE, DATASIZE, tplot,splot,clearPlotFlag,cx,cy,cz,ctf,sx,sy,sz,stf, XValue,YValue,ZValue,dialog,SR
 
     mx,my,mz,ax,ay,az,gx,gy,gz,bar,temp = getVMRdata(dev,DATASIZE)
 
@@ -146,6 +164,20 @@ def update():
         Dz = Dz[-BUFFERSIZE:]
         Dtf = Dtf[-BUFFERSIZE:]
 
+    # Filtering is CPU intensive...
+    if useLPF:
+        if showX:
+            # Dx = np.mean(Dx)+filtfilt(lpfb,lpfa,Dx-np.mean(Dx),method="gust") # end effects better with gust
+            Dx = sma_filter(Dx)
+        if showY:            
+            # Dy = np.mean(Dy)+filtfilt(lpfb,lpfa,Dy-np.mean(Dy),method="gust")
+            Dy = sma_filter(Dy)
+        if showZ:
+            # Dz = np.mean(Dz)+filtfilt(lpfb,lpfa,Dz-np.mean(Dz),method="gust")
+            Dz = sma_filter(Dz)
+        if showTF:
+            # Dtf = np.mean(Dtf)+filtfilt(lpfb,lpfa,Dtf-np.mean(Dtf),method="gust")
+            Dtf = sma_filter(Dtf)
 
     if clearPlotFlag:
         tplot.clear()
@@ -179,8 +211,8 @@ def update():
             cz.setData(Dz)    
         if showTF:
             ctf.setData(Dtf)    
-    
 
+    
     # Spectrum
     if showX:
         # fx, Px = signal.periodogram(Dx,SR,detrend='constant',scaling='density')
@@ -199,6 +231,9 @@ def update():
         ftf, Ptf = signal.welch(Dtf,SR,nperseg=np.floor(BUFFERSIZE/WELCHFACTOR),detrend='constant',scaling='density')
         stf.setData(ftf,np.sqrt(Ptf))
 
+def updatedialog():
+    global dev,cx,cy,cz, sx,sy,sz,stf, Dx,Dy,Dz,Dtf, BUFFERSIZE, DATASIZE, tplot,splot,clearPlotFlag,cx,cy,cz,ctf,sx,sy,sz,stf, XValue,YValue,ZValue,dialog
+
     XValue.setText(f'X: {Dx[-1]:.0f} nT\t {np.mean(Dx):.0f} nT mean\t {np.ptp(Dx):.0f} nT pkpk')
     YValue.setText(f'Y: {Dy[-1]:.0f} nT\t {np.mean(Dy):.0f} nT mean\t {np.ptp(Dy):.0f} nT pkpk')
     ZValue.setText(f'Z: {Dz[-1]:.0f} nT\t {np.mean(Dz):.0f} nT mean\t {np.ptp(Dz):.0f} nT pkpk')
@@ -207,9 +242,13 @@ def update():
 
 
 # Set an update and process Qt events until the window is closed.
-timer = pg.QtCore.QTimer() # Create a timer
-timer.timeout.connect(update) # Call the update routine when the timer ticks
-timer.start(round(SR/DATASIZE)) # Timer event set for 50 times a second
+plottimer = pg.QtCore.QTimer() # Create a timer
+plottimer.timeout.connect(update) # Call the data collect/plot update routine when this timer ticks
+dialogtimer = pg.QtCore.QTimer() # Create a timer
+dialogtimer.timeout.connect(updatedialog) # Call the dialog text update routine when this timer ticks
+plottimer.start(round(SR/DATASIZE)) # milliseconds!  Timer tick set for many (25-50) times a second
+# plottimer.start(100) # milliseconds
+dialogtimer.start(1000) # Timer tick set for 1 time a second
 window.show()
-app.exec() # Fall into event loop... exits when main window is closed
+app.exec() # Fall into event loop... exits when both plot and dialog are closed
 dialog.close()

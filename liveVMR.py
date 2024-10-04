@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Matplotlib animation for realtime data, first try, poorly optimized
 # Works OK at 2 Hz 0.5 tick, works but cant keep up at 10 Hz 0.1
 # Configure rate on VMR to match tick, otherwise errors
  
@@ -71,8 +72,8 @@ class RealtimePlot:
 
   def animate(self,*args):
 
-    # Get new data from the sensor
-    data = self.dev.vector(duration=self.tickTime, timeaxis=True, flush=False)
+    # Get new data from the sensor; flush = False produces continuous data with buffering
+    data = self.dev.vector(duration=self.tickTime, timeaxis=True, flush=False) 
 
     if len(self.data_t)==self.data_t.maxlen:
       print('Full')
