@@ -4,7 +4,7 @@
 # 200 Hz is great as long as we don't use the LPF.  need faster LPF!
 
 SR = 200 # VMR Sampling rate
-WINDOWSEC = 5 # Seconds of data in plot window
+WINDOWSEC = 4 # Seconds of data in plot window
 BUFFERSIZE = int(SR*WINDOWSEC)
 DATASIZE = 10 # Points of data to get at a time
 WELCHFACTOR = 6 # Number of segments for Welch PSD
