@@ -1,0 +1,9 @@
+matplotlib==3.9.2
+numpy==2.1.1
+pandas==2.2.3
+PyQt6==6.7.1
+PyQt6_sip==13.8.0
+pyqtgraph==0.13.7
+pyserial==3.5
+scipy==1.14.1
+tio==3.8.1
