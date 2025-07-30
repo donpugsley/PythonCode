@@ -26,11 +26,11 @@ def getTimebase(dev): # Get VMR timebase clock rate
 
 def ppmdevice(url): # Open VMR port and set requested sampling rate
   dev = tldevice.Device(url)
-  assert(dev.dev.name()=='PPM')
-#   timebasehz = getTimebase(dev)
-#   decimation = int(timebasehz/sr)
-#   dev.data.rate(SR)
-  return dev
+  if dev.dev.name()=='PPM':
+      return dev
+  else:      
+      dev = tldevice.Device(url+'/0')
+      return dev
 
 parser = argparse.ArgumentParser(prog='PPM-Monitor', description='Scalar Field Graphing Monitor')
 parser.add_argument("url", nargs='?', default='tcp://localhost', help='URL: tcp://localhost')

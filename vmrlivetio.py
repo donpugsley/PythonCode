@@ -4,11 +4,12 @@
 # How fast will this go?  200 Hzseems to work OK
 # TODO - try streaming, the simple scheme loses some data points
 
-SR = 200 # VMR Sampling rate
-WINDOWSEC = 5 # Seconds of data in plot window
+SR = 50 # VMR Sampling rate
+WINDOWSEC = 30 # Seconds of data in plot window
 BUFFERSIZE = int(SR*WINDOWSEC)
 DATASIZE = 10 # Points of data to get at a time
 WELCHFACTOR = 6 # Number of segments for Welch PSD
+DIALOGFONTSIZE = 9
 
 import sys
 import argparse
@@ -86,13 +87,13 @@ ZValue = QLabel()
 TFValue = QLabel()
 layout = QVBoxLayout(dialog)
 layout.addWidget(XValue)
-XValue.setFont(QFont('Arial', 26))
+XValue.setFont(QFont('Arial', DIALOGFONTSIZE))
 layout.addWidget(YValue)
-YValue.setFont(QFont('Arial', 26))
+YValue.setFont(QFont('Arial', DIALOGFONTSIZE))
 layout.addWidget(ZValue)
-ZValue.setFont(QFont('Arial', 26))
+ZValue.setFont(QFont('Arial', DIALOGFONTSIZE))
 layout.addWidget(TFValue)
-TFValue.setFont(QFont('Arial', 26))
+TFValue.setFont(QFont('Arial', DIALOGFONTSIZE))
 dialog.setLayout(layout)
 
 tplot = w.addPlot(row=0,col=0) 
@@ -105,7 +106,7 @@ ctf = tplot.plot(pen="y")
 
 splot = w.addPlot(row=1,col=0) 
 splot.showGrid(True,True)
-splot.setLogMode(True,False)
+splot.setLogMode(True,True)
 sx = splot.plot(pen="r") # Add empty curves to the plot; set the curve data later
 sy = splot.plot(pen="g") 
 sz = splot.plot(pen="b") 

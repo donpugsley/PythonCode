@@ -12,30 +12,36 @@ from scipy import signal
 
 # TODO - improve input flexibility
 # fn = '../testvmr.dat1.tsv'
-if len(sys.argv) > 1:
+if len(sys.argv) == 2:
+    fn = sys.argv[1]
+    rpcid = -1 # flag meaning no RPC needed
+elif len(sys.argv) == 3: 
     fn = sys.argv[1]
     rpcid = sys.argv[2]
 else:
-    print(f'Usage: readtsv.py filename rpcid ')
+    print(f'Usage: readtsv.py filename <rpcid> ')
     sys.exit()
-    
-# DEBUG
-#    fn = '../homeoffice2.tsv'
-#    rpcid = 0
     
 doplots = True
     
-# Maybe change backend behavior
-# mpl.use('QtAgg')
-
 df = pd.read_csv(fn,delimiter='\t')
 # Drop unused columns (sync4 stuff) that might contain nans
-df = df[['t',f'/{rpcid}/vector.x',f'/{rpcid}/vector.y',f'/{rpcid}/vector.z']]
+if rpcid < 0:
+    df = df[['t','/vector.x','/vector.y','/vector.z']]
+else:
+    df = df[['t',f'/{rpcid}/vector.x',f'/{rpcid}/vector.y',f'/{rpcid}/vector.z']]
+
 data = df.dropna(axis=0) # Drop rows with nan
 t = data['t']; # Seconds
-x = data[f'/{rpcid}/vector.x']
-y = data[f'/{rpcid}/vector.y']
-z = data[f'/{rpcid}/vector.z']
+
+if rpcid < 0:
+    x = data['/vector.x']
+    y = data['/vector.y']
+    z = data['/vector.z']
+else:
+    x = data[f'/{rpcid}/vector.x']
+    y = data[f'/{rpcid}/vector.y']
+    z = data[f'/{rpcid}/vector.z']
 
 N = len(t)
 secs = (t.iloc[-1]-t.iloc[0])
